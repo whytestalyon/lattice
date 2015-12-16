@@ -10,12 +10,12 @@ import com.bwc.lat.io.dom.Subject;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -42,14 +42,14 @@ public class ExcelParser {
     }
 
     public List<Subject> getSubjects() {
+        List<Subject> subjects = new LinkedList<>();
         for (Row row : dataSheet) {
             if (row.getRowNum() < dataRowStart) {
                 continue;
             }
-            System.out.println("rownum: " + row.getRowNum());
             Subject subject = new Subject();
+            subjects.add(subject);
             for (Cell cell : row) {
-                CellValue cellValue = evaluator.evaluate(cell);
                 switch (SubjectColumn.getColByIndex(cell.getColumnIndex())) {
                     case INITIALS:
                         String initials = cell.getStringCellValue().trim();
@@ -66,7 +66,11 @@ public class ExcelParser {
                         DataFormatter formatter = new DataFormatter();
                         formatter.addFormat("000#", new DecimalFormat("#0000"));
                         String formattedCellValue = formatter.formatCellValue(cell);
-//                        System.out.println(formattedCellValue);
+                        if (formattedCellValue.equals("0000")) {
+                            //end of data reached
+                            System.out.println("End of data reached at row " + (cell.getRowIndex() + 1));
+                            break;
+                        }
                         if (subject.getAoip_id() == null) {
                             subject.setAoip_id(formattedCellValue);
                         } else {
@@ -80,10 +84,23 @@ public class ExcelParser {
                         subject.setMi(cell.getStringCellValue().trim());
                         break;
                     case LAST_NAME:
-                        subject.setLname(cell.getStringCellValue().trim());
+                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            if (cell.getNumericCellValue() >= 1D) {
+                                formatter = new DataFormatter();
+                                formatter.addFormat("0000", new DecimalFormat("0000"));
+                                formattedCellValue = formatter.formatCellValue(cell);
+                                subject.setLname(formattedCellValue);
+                            }
+                        } else {
+                            subject.setLname(cell.getStringCellValue().trim());
+                        }
                         break;
                     case DOB:
-                        subject.setDob(cell.getDateCellValue());
+                        if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                            break;
+                        } else {
+                            subject.setDob(cell.getDateCellValue());
+                        }
                         break;
                     case GENDER:
                         subject.setGender(cell.getStringCellValue().trim());
@@ -110,10 +127,28 @@ public class ExcelParser {
                             }
                         }
                     case CLINICAL_TRIAL_ID:
-                        subject.setClinical_trial_id(cell.getStringCellValue().trim());
+                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            if (cell.getNumericCellValue() >= 1D) {
+                                formatter = new DataFormatter();
+                                DecimalFormatSymbols clinIDSymbols = new DecimalFormatSymbols();
+                                clinIDSymbols.setGroupingSeparator('-');
+                                DecimalFormat clinIdFormat = new DecimalFormat("0000,000", clinIDSymbols);
+                                formatter.addFormat("0000-000", clinIdFormat);
+                                formattedCellValue = formatter.formatCellValue(cell);
+                                subject.setClinical_trial_id(formattedCellValue);
+                            }
+                        } else {
+                            subject.setClinical_trial_id(cell.getStringCellValue().trim());
+                        }
                         break;
                     case OTHER_ID:
-                        subject.setOther_id(cell.getStringCellValue().trim());
+                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            if (cell.getNumericCellValue() >= 1D) {
+                                subject.setOther_id(String.valueOf(Math.round(cell.getNumericCellValue())));
+                            }
+                        } else {
+                            subject.setOther_id(cell.getStringCellValue().trim());
+                        }
                         break;
                     case DX_PRI:
                         subject.setDx_pri(cell.getStringCellValue().trim());
@@ -152,7 +187,16 @@ public class ExcelParser {
                         subject.setState(cell.getStringCellValue().trim());
                         break;
                     case ZIP:
-                        subject.setZip(cell.getStringCellValue().trim());
+                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            if (cell.getNumericCellValue() >= 1D) {
+                                formatter = new DataFormatter();
+                                formatter.addFormat("00000", new DecimalFormat("00000"));
+                                formattedCellValue = formatter.formatCellValue(cell);
+                                subject.setZip(formattedCellValue);
+                            }
+                        } else {
+                            subject.setZip(cell.getStringCellValue().trim());
+                        }
                         break;
                     case COUNTRY:
                         subject.setCountry(cell.getStringCellValue().trim());
@@ -169,34 +213,9 @@ public class ExcelParser {
                     default:
                         break;
                 }
-//                    switch (cellValue.getCellType()) {
-//                        case Cell.CELL_TYPE_BOOLEAN:
-//                            System.out.print(cellValue.getBooleanValue() + "\t");
-//                            break;
-//                        case Cell.CELL_TYPE_NUMERIC:
-//                            if (HSSFDateUtil.isCellDateFormatted(cell)) {
-//                                System.out.print(cell.getDateCellValue() + "\t");
-//                            } else {
-//                                System.out.print(cellValue.getNumberValue() + "\t");
-//                            }
-//                            break;
-//                        case Cell.CELL_TYPE_STRING:
-//                            System.out.print(cellValue.getStringValue() + "\t");
-//                            break;
-//                        case Cell.CELL_TYPE_BLANK:
-//                        case Cell.CELL_TYPE_ERROR:
-//                        case Cell.CELL_TYPE_FORMULA:
-//                        default:
-//                            break;
-//                    }
-            }
-            System.out.println(subject);
-
-            if (row.getRowNum() > 20) {
-                break;
             }
         }
-        return null;
+        return subjects;
     }
 
     private enum SubjectColumn {
