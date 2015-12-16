@@ -14,6 +14,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -215,6 +217,10 @@ public class ExcelParser {
                 }
             }
         }
+
+        //merge the subjects into a single subject record per AOIP ID
+        Map<String, List<Subject>> idGroupedSubjects = subjects.stream().collect(Collectors.groupingBy(Subject::getAoip_id));
+
         return subjects;
     }
 
