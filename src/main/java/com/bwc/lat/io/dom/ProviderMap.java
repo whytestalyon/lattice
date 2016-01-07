@@ -39,6 +39,7 @@ public class ProviderMap {
         codeMap.put("Weinberg", 17);
         codeMap.put("Wilkes", 18);
         codeMap.put("Wirostko", 19);
+        codeMap.put("F Collison", 23);
     }
 
     public static final ProviderMap getInstance() {
@@ -46,6 +47,9 @@ public class ProviderMap {
     }
 
     public Integer getProviderCode(String dx) {
+        if (dx == null) {
+            return null;
+        }
         dx = dx.trim();
         if (dx.isEmpty()) {
             return null;

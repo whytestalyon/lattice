@@ -6,6 +6,7 @@
 package com.bwc.lat;
 
 import com.bwc.lat.io.ExcelParser;
+import com.bwc.lat.io.dom.Encounter;
 import com.bwc.lat.io.dom.Subject;
 import com.oracle.util.jdbc.JDBCUtilities;
 import java.io.File;
@@ -50,9 +51,15 @@ public class LatticeLoader {
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
         List<Subject> subjects = ep.getSubjects();
-        int min = subjects.stream().mapToInt(Subject::getSubject_id).min().getAsInt();
+        int sid = subjects.stream().filter(s -> s.getAoip_id().equals("JC_0002")).findFirst().get().getSubject_id();
+        System.out.println("ID: " + sid);
         subjects.stream()
-                .filter(s -> s.getSubject_id() < min + 50)
+                .filter(s -> s.getAoip_id().equals("JC_0002"))
+                .forEach(System.out::println);
+
+        List<Encounter> encounters = ep.getEncounters(subjects);
+        encounters.stream()
+                .filter(e -> e.getSubject_id() == sid)
                 .forEach(System.out::println);
     }
 

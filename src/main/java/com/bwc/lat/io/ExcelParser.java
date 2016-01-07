@@ -5,8 +5,12 @@
  */
 package com.bwc.lat.io;
 
+import com.bwc.lat.io.exc.SubjectColumn;
+import com.bwc.lat.io.dom.Encounter;
+import com.bwc.lat.io.dom.ProviderMap;
 import com.bwc.lat.io.dom.Referal;
 import com.bwc.lat.io.dom.Subject;
+import com.bwc.lat.io.exc.EncounterColumn;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -38,6 +42,7 @@ public class ExcelParser {
     private final Workbook excelWorkbook;
     private final Sheet dataSheet;
     FormulaEvaluator evaluator;
+    private ProviderMap pm = ProviderMap.getInstance();
 
     public ExcelParser(File excelFile) throws IOException, InvalidFormatException {
         excelWorkbook = WorkbookFactory.create(excelFile);
@@ -45,8 +50,171 @@ public class ExcelParser {
         evaluator = excelWorkbook.getCreationHelper().createFormulaEvaluator();
     }
 
+    public List<Encounter> getEncounters(List<Subject> subjects) {
+        List<Encounter> encounters = new LinkedList<>();
+        //create ID lookup map to map encounters to subjects
+        Map<String, Integer> aoipIdToSubjectIdMap = subjects.stream()
+                .collect(Collectors.toMap(Subject::getAoip_id, Subject::getSubject_id));
+        //iterate data in excel worksheet
+        for (Row row : dataSheet) {
+            if (row.getRowNum() < dataRowStart) {
+                continue;
+            }
+            //get the AOIP ID from the initials column and ID column
+            Cell initialsCell = row.getCell(SubjectColumn.INITIALS.getColIndex());
+            String initials = initialsCell.getStringCellValue().trim();
+            if (initials.isEmpty() || initials.contains("-")) {
+                initials = "OI";
+            }
+            Cell idCell = row.getCell(SubjectColumn.ID.getColIndex());
+            DataFormatter formatter = new DataFormatter();
+            formatter.addFormat("000#", new DecimalFormat("#0000"));
+            String formattedCellValue = formatter.formatCellValue(idCell);
+            if (formattedCellValue.isEmpty() || formattedCellValue.equals("0000")) {
+                //end of data reached
+                break;
+            }
+            String aoipId = initials + "_" + formattedCellValue;
+
+            //create new encounter
+            Encounter enc = null;
+            try {
+                enc = new Encounter(aoipIdToSubjectIdMap.get(aoipId), 13);
+            } catch (NullPointerException np) {
+                System.out.println("NP: " + aoipId);
+                System.exit(1);
+            }
+            encounters.add(enc);
+
+            //populate the new encounter
+            //set encounter ID
+            enc.setEncounter_status_id(4);
+
+            //set start and end date
+            Cell visDateCell = row.getCell(SubjectColumn.VISIT_DATE.getColIndex());
+            if (visDateCell.getCellType() != Cell.CELL_TYPE_STRING) {
+                enc.setEncounter_start_date(visDateCell.getDateCellValue());
+                enc.setEncounter_end_date(visDateCell.getDateCellValue());
+            }
+
+            //set notes
+            String staff = null;
+            try {
+                staff = row.getCell(EncounterColumn.EXAMS_STAFF.getColIndex()).getStringCellValue();
+            } catch (NullPointerException np) {
+                System.out.println("NP: " + aoipId + " rownum: " + row.getRowNum());
+                System.exit(1);
+            }
+
+            String notes = row.getCell(EncounterColumn.NOTES.getColIndex()).getStringCellValue();
+            if (staff != null && !staff.isEmpty()) {
+                staff = "\"Exam Staff=" + staff + "\"";
+            }
+            if (notes == null) {
+                notes = staff;
+            } else {
+                notes = staff + " \n " + notes;
+            }
+            if (notes != null && !notes.isEmpty()) {
+                enc.setNotes(notes);
+            }
+
+            //set stippend given
+            Cell stippendCell = row.getCell(EncounterColumn.STIPEND_GIVEN.getColIndex());
+            switch (stippendCell.getStringCellValue().trim()) {
+                case "Yes":
+                    enc.setStipend_given(1);
+                    break;
+                case "No":
+                case "Declined":
+                    enc.setStipend_given(0);
+                    break;
+                default:
+                    break;
+            }
+
+            //set addendum given
+            Cell addendumCell = row.getCell(EncounterColumn.ADDENDUM.getColIndex());
+            switch (addendumCell.getStringCellValue().trim()) {
+                case "Yes":
+                    enc.setAddendum_needed(1);
+                    break;
+                case "No":
+                case "Declined":
+                    enc.setAddendum_needed(0);
+                    break;
+                default:
+                    break;
+            }
+
+            //set female of child bearing age flag
+            Cell fcbCell = row.getCell(EncounterColumn.FEMALE_CHILD_BEARING_AGE.getColIndex());
+            switch (fcbCell.getStringCellValue().trim()) {
+                case "Yes":
+                    enc.setFemale_child_bearing_age(1);
+                    break;
+                case "No":
+                    enc.setFemale_child_bearing_age(0);
+                    break;
+                default:
+                    break;
+            }
+
+            //set pregnant flag
+            Cell pregCell = row.getCell(EncounterColumn.PREGNANT_OR_NURSING.getColIndex());
+            switch (pregCell.getStringCellValue().trim()) {
+                case "Yes":
+                    enc.setPregnant_or_nursing(1);
+                    break;
+                case "No":
+                    enc.setPregnant_or_nursing(0);
+                    break;
+                default:
+                    break;
+            }
+
+            //set itinerary flag
+            Cell itinCell = row.getCell(EncounterColumn.ITINERARY.getColIndex());
+            switch (itinCell.getStringCellValue().trim()) {
+                case "Yes":
+                    enc.setItinerary_needed(1);
+                    break;
+                case "No":
+                    enc.setItinerary_needed(0);
+                    break;
+                default:
+                    break;
+            }
+
+            //set provider
+            String provider = row.getCell(EncounterColumn.REFERING_MD.getColIndex()).getStringCellValue().trim();
+            enc.setRef_pro_id(pm.getProviderCode(provider));
+
+        }
+
+        //find earliest encounter to mark as first encounter for each subject
+        encounters.stream()
+                .collect(Collectors.groupingBy(Encounter::getSubject_id))
+                .values()
+                .forEach(ecns -> {
+                    if(ecns.size() == 1){
+                        ecns.get(0).setEncounter_type_id(1);
+                    }else{
+                        ecns.stream()
+                                .sorted((s1,s2) -> s1.getEncounter_start_date().compareTo(s2.getEncounter_start_date()))
+                                .findFirst()
+                                .get()
+                                .setEncounter_type_id(1);
+                    }
+                });
+
+        //merge the subjects into a single subject record per AOIP ID, then return final list
+        return encounters;
+    }
+
     public List<Subject> getSubjects() {
         List<Subject> subjects = new LinkedList<>();
+        OUT:
         for (Row row : dataSheet) {
             if (row.getRowNum() < dataRowStart) {
                 continue;
@@ -70,10 +238,11 @@ public class ExcelParser {
                         DataFormatter formatter = new DataFormatter();
                         formatter.addFormat("000#", new DecimalFormat("#0000"));
                         String formattedCellValue = formatter.formatCellValue(cell);
-                        if (formattedCellValue.equals("0000")) {
+                        if (formattedCellValue.isEmpty() || formattedCellValue.equals("0000")) {
                             //end of data reached
                             System.out.println("End of data reached at row " + (cell.getRowIndex() + 1));
-                            break;
+                            subjects.remove(subjects.size() - 1);
+                            break OUT;
                         }
                         if (subject.getAoip_id() == null) {
                             subject.setAoip_id(formattedCellValue);
@@ -221,9 +390,24 @@ public class ExcelParser {
                     case PHONE_WORK:
                         subject.setPhone_work(cell.getStringCellValue().trim());
                         break;
+                    case PERMISSION_RECONTACT:
+                        switch (cell.getStringCellValue().trim()) {
+                            case "Yes":
+                                subject.setPermission_recontact("true");
+                                break;
+                            case "No":
+                                subject.setPermission_recontact("false");
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
                     default:
                         break;
                 }
+            }
+            if (row.getRowNum() == 3266) {
+                System.out.println("3267 data: " + subject.getAoip_id());
             }
         }
 
@@ -242,10 +426,9 @@ public class ExcelParser {
                     Subject identSub = new Subject();
                     identSub.setVisit_date(new Date(0));
                     return subjects.stream()
-                    .filter(s -> s.getVisit_date() != null)
                     .reduce(identSub, (s1, s2) -> {
                         Subject retSub;
-                        if (s1.getVisit_date().compareTo(s2.getVisit_date()) < 0) {
+                        if (s1.getVisit_date() == null || (s2.getVisit_date() != null && s1.getVisit_date().compareTo(s2.getVisit_date()) < 0)) {
                             //s1 comes before s2
                             retSub = mergeSubjects(s1, s2);
                         } else {
@@ -345,71 +528,6 @@ public class ExcelParser {
             baseSub.setReferral_type_id(mergeSub.getReferral_type_id());
         }
         return baseSub;
-    }
-
-    private enum SubjectColumn {
-
-        INITIALS("C", 2),
-        ID("D", 3),
-        FIRST_NAME("E", 4),
-        MIDDLE_INITIAL("F", 5),
-        LAST_NAME("G", 6),
-        VISIT_DATE("H", 7),
-        DOB("I", 8),
-        GENDER("K", 10),
-        FROEDERT_MRN("N", 13),
-        CHW_ID("O", 14),
-        CLINICAL_TRIAL_ID("P", 15),
-        OTHER_ID("R", 17),
-        ADDRESS1("U", 20),
-        ADDRESS2("V", 21),
-        CITY("W", 22),
-        STATE("X", 23),
-        ZIP("Y", 24),
-        COUNTRY("Z", 25),
-        EMAIL("AA", 26),
-        PHONE_PERSONAL("AB", 27),
-        PHONE_WORK("AC", 28),
-        DX_PRI("AG", 32),
-        DX_SEC("AH", 33),
-        DX_OTHER("AI", 34),
-        DILATE_SAFE("AK", 36),
-        NYSTAGMUS("AL", 37),
-        UNSTABLE_FIXATION("AM", 38),
-        EYE_COLOR("AN", 39),
-        REFERRAL_TYPE("AP", 41),
-        NOT_APPLICABLE("-1", -1);
-
-        private static final HashMap<Integer, SubjectColumn> colMap = new HashMap<>(50);
-
-        static {
-            for (SubjectColumn sc : SubjectColumn.values()) {
-                colMap.put(sc.getColIndex(), sc);
-            }
-        }
-        private final String column;
-        private final int colIndex;
-
-        private SubjectColumn(String column, int colIndex) {
-            this.column = column;
-            this.colIndex = colIndex;
-        }
-
-        public String getColumn() {
-            return column;
-        }
-
-        public int getColIndex() {
-            return colIndex;
-        }
-
-        public static SubjectColumn getColByIndex(int idx) {
-            SubjectColumn col = NOT_APPLICABLE;
-            if (colMap.containsKey(idx)) {
-                col = colMap.get(idx);
-            }
-            return col;
-        }
     }
 
 }
