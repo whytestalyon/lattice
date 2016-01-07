@@ -18,7 +18,7 @@ public class Subject {
     private final int subject_id;
     private Referal referral_type_id = Referal.UNKNOWN;
     private String chw_id, froedert_mrn, aoip_id, fname, mi, lname, gender, clinical_trial_id, other_id, address1, address2, city, state, zip, country, email, phone_personal, phone_work, eye_color, created_by, permission_recontact;
-    private Date dob, created_date;
+    private Date dob, created_date, visit_date;
     private String dx_pri, dx_sec, dx_other;
     private String dilate_safe, nystagmus, unstable_fixation;
 
@@ -44,6 +44,7 @@ public class Subject {
         created_by = "BWILK";
         permission_recontact = null;
         dob = null;
+        visit_date = null;
         created_date = new Date();
         froedert_mrn = null;
         chw_id = null;
@@ -53,6 +54,14 @@ public class Subject {
         dilate_safe = null;
         nystagmus = null;
         unstable_fixation = null;
+    }
+
+    public Date getVisit_date() {
+        return visit_date;
+    }
+
+    public void setVisit_date(Date visit_date) {
+        this.visit_date = visit_date;
     }
 
     public int getSubject_id() {

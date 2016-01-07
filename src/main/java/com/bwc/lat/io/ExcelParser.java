@@ -11,10 +11,12 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -102,6 +104,13 @@ public class ExcelParser {
                             break;
                         } else {
                             subject.setDob(cell.getDateCellValue());
+                        }
+                        break;
+                    case VISIT_DATE:
+                        if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                            break;
+                        } else {
+                            subject.setVisit_date(cell.getDateCellValue());
                         }
                         break;
                     case GENDER:
@@ -218,10 +227,124 @@ public class ExcelParser {
             }
         }
 
-        //merge the subjects into a single subject record per AOIP ID
-        Map<String, List<Subject>> idGroupedSubjects = subjects.stream().collect(Collectors.groupingBy(Subject::getAoip_id));
+        //merge the subjects into a single subject record per AOIP ID, then return final list
+        return mergeSubjects(subjects);
+    }
 
-        return subjects;
+    private List<Subject> mergeSubjects(List<Subject> rawSubjects) {
+        System.out.println("Merging " + rawSubjects.size() + " subject record...");
+        Map<String, List<Subject>> idGroupedSubjects = rawSubjects.stream().collect(Collectors.groupingBy(Subject::getAoip_id));
+        System.out.println("Grouped into " + idGroupedSubjects.size() + " individual subjects.");
+        //when the same field has multiple values for it simply keep value from most recent visit
+        return idGroupedSubjects.values()
+                .stream()
+                .map(subjects -> {
+                    Subject identSub = new Subject();
+                    identSub.setVisit_date(new Date(0));
+                    return subjects.stream()
+                    .filter(s -> s.getVisit_date() != null)
+                    .reduce(identSub, (s1, s2) -> {
+                        Subject retSub;
+                        if (s1.getVisit_date().compareTo(s2.getVisit_date()) < 0) {
+                            //s1 comes before s2
+                            retSub = mergeSubjects(s1, s2);
+                        } else {
+                            //s2 comes before s1
+                            retSub = mergeSubjects(s2, s1);
+                        }
+                        return retSub;
+                    });
+                })
+                .filter(s -> s.getAoip_id() != null)
+                .collect(Collectors.toList());
+    }
+
+    private Subject mergeSubjects(Subject baseSub, Subject mergeSub) {
+        if (mergeSub.getAoip_id() != null) {
+            baseSub.setAoip_id(mergeSub.getAoip_id());
+        }
+        if (mergeSub.getFname() != null) {
+            baseSub.setFname(mergeSub.getFname());
+        }
+        if (mergeSub.getMi() != null) {
+            baseSub.setMi(mergeSub.getMi());
+        }
+        if (mergeSub.getLname() != null) {
+            baseSub.setLname(mergeSub.getLname());
+        }
+        if (mergeSub.getDob() != null) {
+            baseSub.setDob(mergeSub.getDob());
+        }
+        if (mergeSub.getGender() != null) {
+            baseSub.setGender(mergeSub.getGender());
+        }
+        if (mergeSub.getFroedert_mrn() != null) {
+            baseSub.setFroedert_mrn(mergeSub.getFroedert_mrn());
+        }
+        if (mergeSub.getChw_id() != null) {
+            baseSub.setChw_id(mergeSub.getChw_id());
+        }
+        if (mergeSub.getClinical_trial_id() != null) {
+            baseSub.setClinical_trial_id(mergeSub.getClinical_trial_id());
+        }
+        if (mergeSub.getOther_id() != null) {
+            baseSub.setOther_id(mergeSub.getOther_id());
+        }
+        if (mergeSub.getAddress1() != null) {
+            baseSub.setAddress1(mergeSub.getAddress1());
+        }
+        if (mergeSub.getAddress2() != null) {
+            baseSub.setAddress2(mergeSub.getAddress2());
+        }
+        if (mergeSub.getCity() != null) {
+            baseSub.setCity(mergeSub.getCity());
+        }
+        if (mergeSub.getState() != null) {
+            baseSub.setState(mergeSub.getState());
+        }
+        if (mergeSub.getZip() != null) {
+            baseSub.setZip(mergeSub.getZip());
+        }
+        if (mergeSub.getCountry() != null) {
+            baseSub.setCountry(mergeSub.getCountry());
+        }
+        if (mergeSub.getEmail() != null) {
+            baseSub.setEmail(mergeSub.getEmail());
+        }
+        if (mergeSub.getPhone_personal() != null) {
+            baseSub.setPhone_personal(mergeSub.getPhone_personal());
+        }
+        if (mergeSub.getPhone_work() != null) {
+            baseSub.setPhone_work(mergeSub.getPhone_work());
+        }
+        if (mergeSub.getDx_pri() != null) {
+            baseSub.setDx_pri(mergeSub.getDx_pri());
+        }
+        if (mergeSub.getDx_sec() != null) {
+            baseSub.setDx_sec(mergeSub.getDx_sec());
+        }
+        if (mergeSub.getDx_other() != null) {
+            baseSub.setDx_other(mergeSub.getDx_other());
+        }
+        if (mergeSub.getDx_other() != null) {
+            baseSub.setDx_other(mergeSub.getDx_other());
+        }
+        if (mergeSub.getDilate_safe() != null) {
+            baseSub.setDilate_safe(mergeSub.getDilate_safe());
+        }
+        if (mergeSub.getNystagmus() != null) {
+            baseSub.setNystagmus(mergeSub.getNystagmus());
+        }
+        if (mergeSub.getUnstable_fixation() != null) {
+            baseSub.setUnstable_fixation(mergeSub.getUnstable_fixation());
+        }
+        if (mergeSub.getEye_color() != null) {
+            baseSub.setEye_color(mergeSub.getEye_color());
+        }
+        if (mergeSub.getReferral_type_id() != null && mergeSub.getReferral_type_id() != Referal.UNKNOWN) {
+            baseSub.setReferral_type_id(mergeSub.getReferral_type_id());
+        }
+        return baseSub;
     }
 
     private enum SubjectColumn {
@@ -231,6 +354,7 @@ public class ExcelParser {
         FIRST_NAME("E", 4),
         MIDDLE_INITIAL("F", 5),
         LAST_NAME("G", 6),
+        VISIT_DATE("H", 7),
         DOB("I", 8),
         GENDER("K", 10),
         FROEDERT_MRN("N", 13),

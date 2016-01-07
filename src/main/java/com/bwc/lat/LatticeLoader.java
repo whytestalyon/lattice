@@ -40,17 +40,20 @@ public class LatticeLoader {
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException, InvalidFormatException {
         //check the supplied command line parameters and init fields
         checkInputAndInitialize(args);
-        
+
         //connect to the database using the connection informatyion
         //specified in the properties file
 //        dbUtils = new JDBCUtilities(connectionProps.getAbsolutePath());
 //        Class.forName(dbUtils.getDriver());
 //        databaseConnection = dbUtils.getConnection();
 //        System.out.println("Connected to Lattice database!");
-        
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
         List<Subject> subjects = ep.getSubjects();
+        int min = subjects.stream().mapToInt(Subject::getSubject_id).min().getAsInt();
+        subjects.stream()
+                .filter(s -> s.getSubject_id() < min + 50)
+                .forEach(System.out::println);
     }
 
     /**
