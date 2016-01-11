@@ -35,8 +35,39 @@ public class EncounterExamType {
         return personnel_id;
     }
 
-    public void setPersonnel_id(Integer personnel_id) {
-        this.personnel_id = personnel_id;
+    public void setPersonnel_id(String personnel) {
+        if (personnel != null) {
+            String p = personnel.split(",")[0];
+            switch (p) {
+                case "NICU":
+                    personnel_id = 111;
+                    break;
+                case "M Goldberg":
+                    personnel_id = 106;
+                    break;
+                case "K Packard":
+                    personnel_id = 12;
+                    break;
+                case "J Jones":
+                    personnel_id = 112;
+                    break;
+                case "K McKenney":
+                    //TBD
+//                    personnel_id = 0;
+                    break;
+                case "C Skumatz":
+                    personnel_id = 105;
+                    break;
+                case "P Summerfelt":
+                    personnel_id = 108;
+                    break;
+                case "Done at Neurology":
+                    personnel_id = 112;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public int getEncounter_exam_type_id() {

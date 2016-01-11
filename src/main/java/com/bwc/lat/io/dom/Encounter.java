@@ -23,7 +23,6 @@ public class Encounter {
     private Integer encounter_status_id = null;
     private Integer protocol_id = null;
     private Integer prim_pro_id = null;
-    private Integer bankq_id = null;
     private Integer ref_pro_id = null;
     private Integer att_pro_id = null;
     private Date enc_sch_start_date = null;
@@ -47,11 +46,17 @@ public class Encounter {
     private Integer addendum_needed = null;
     private Integer pregnant_or_nursing = null;
     private Integer female_child_bearing_age = null;
+    private final Bankq bankq;
 
     public Encounter(int subject_id, int encounter_type_id) {
         this.encounter_id = idCntr.getAndIncrement();
         this.subject_id = subject_id;
         this.encounter_type_id = encounter_type_id;
+        bankq = new Bankq();
+    }
+
+    public Bankq getBankq() {
+        return bankq;
     }
 
     public Integer getEncounter_status_id() {
@@ -76,14 +81,6 @@ public class Encounter {
 
     public void setPrim_pro_id(Integer prim_pro_id) {
         this.prim_pro_id = prim_pro_id;
-    }
-
-    public Integer getBankq_id() {
-        return bankq_id;
-    }
-
-    public void setBankq_id(Integer bankq_id) {
-        this.bankq_id = bankq_id;
     }
 
     public Integer getRef_pro_id() {
@@ -280,7 +277,7 @@ public class Encounter {
 
     @Override
     public String toString() {
-        return "Encounter{" + "encounter_id=" + encounter_id + ", subject_id=" + subject_id + ", encounter_type_id=" + encounter_type_id + ", encounter_status_id=" + encounter_status_id + ", protocol_id=" + protocol_id + ", prim_pro_id=" + prim_pro_id + ", bankq_id=" + bankq_id + ", ref_pro_id=" + ref_pro_id + ", att_pro_id=" + att_pro_id + ", enc_sch_start_date=" + enc_sch_start_date + ", enc_sch_stop_date=" + enc_sch_stop_date + ", encounter_start_date=" + encounter_start_date + ", encounter_end_date=" + encounter_end_date + ", clinic_encounter_date=" + clinic_encounter_date + ", initial_contact_date=" + initial_contact_date + ", notes=" + notes + ", bill_sentdate=" + bill_sentdate + ", bill_paiddate=" + bill_paiddate + ", bill_notes=" + bill_notes + ", stipend_given=" + stipend_given + ", stipend_notes=" + stipend_notes + ", created_by=" + created_by + ", created_date=" + created_date + ", modified_by=" + modified_by + ", modified_date=" + modified_date + ", itinerary_needed=" + itinerary_needed + ", consent_needed=" + consent_needed + ", addendum_needed=" + addendum_needed + ", pregnant_or_nursing=" + pregnant_or_nursing + ", female_child_bearing_age=" + female_child_bearing_age + '}';
+        return "Encounter{" + "encounter_id=" + encounter_id + ", subject_id=" + subject_id + ", encounter_type_id=" + encounter_type_id + ", encounter_status_id=" + encounter_status_id + ", protocol_id=" + protocol_id + ", prim_pro_id=" + prim_pro_id + ", ref_pro_id=" + ref_pro_id + ", att_pro_id=" + att_pro_id + ", enc_sch_start_date=" + enc_sch_start_date + ", enc_sch_stop_date=" + enc_sch_stop_date + ", encounter_start_date=" + encounter_start_date + ", encounter_end_date=" + encounter_end_date + ", clinic_encounter_date=" + clinic_encounter_date + ", initial_contact_date=" + initial_contact_date + ", notes=" + notes + ", bill_sentdate=" + bill_sentdate + ", bill_paiddate=" + bill_paiddate + ", bill_notes=" + bill_notes + ", stipend_given=" + stipend_given + ", stipend_notes=" + stipend_notes + ", created_by=" + created_by + ", created_date=" + created_date + ", modified_by=" + modified_by + ", modified_date=" + modified_date + ", itinerary_needed=" + itinerary_needed + ", consent_needed=" + consent_needed + ", addendum_needed=" + addendum_needed + ", pregnant_or_nursing=" + pregnant_or_nursing + ", female_child_bearing_age=" + female_child_bearing_age + ", bankq=" + bankq + '}';
     }
 
 }

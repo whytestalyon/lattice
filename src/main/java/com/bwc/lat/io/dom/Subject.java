@@ -310,7 +310,94 @@ public class Subject {
 
     @Override
     public String toString() {
-        return "Subject{" + "subject_id=" + subject_id + ", referral_type_id=" + referral_type_id + ", chw_id=" + chw_id + ", froedert_mrn=" + froedert_mrn + ", aoip_id=" + aoip_id + ", fname=" + fname + ", mi=" + mi + ", lname=" + lname + ", gender=" + gender + ", clinical_trial_id=" + clinical_trial_id + ", other_id=" + other_id + ", address1=" + address1 + ", address2=" + address2 + ", city=" + city + ", state=" + state + ", zip=" + zip + ", country=" + country + ", email=" + email + ", phone_personal=" + phone_personal + ", phone_work=" + phone_work + ", eye_color=" + eye_color + ", created_by=" + created_by + ", permission_recontact=" + permission_recontact + ", dob=" + dob + ", created_date=" + created_date + ", dx_pri=" + dx_pri + ", dx_sec=" + dx_sec + ", dx_other=" + dx_other + ", dilate_safe=" + dilate_safe + ", nystagmus=" + nystagmus + ", unstable_fixation=" + unstable_fixation + '}';
+        return "Subject{" + "subject_id=" + subject_id + ", referral_type_id=" + referral_type_id + ", chw_id=" + chw_id + ", froedert_mrn=" + froedert_mrn + ", aoip_id=" + aoip_id + ", fname=" + fname + ", mi=" + mi + ", lname=" + lname + ", gender=" + gender + ", clinical_trial_id=" + clinical_trial_id + ", other_id=" + other_id + ", address1=" + address1 + ", address2=" + address2 + ", city=" + city + ", state=" + state + ", zip=" + zip + ", country=" + country + ", email=" + email + ", phone_personal=" + phone_personal + ", phone_work=" + phone_work + ", eye_color=" + eye_color + ", created_by=" + created_by + ", permission_recontact=" + permission_recontact + ", dob=" + dob + ", created_date=" + created_date + ", visit_date=" + visit_date + ", dx_pri=" + dx_pri + ", dx_sec=" + dx_sec + ", dx_other=" + dx_other + ", dilate_safe=" + dilate_safe + ", nystagmus=" + nystagmus + ", unstable_fixation=" + unstable_fixation + '}';
     }
 
+    public Subject merge(Subject mergeSub) {
+        if (mergeSub.getAoip_id() != null) {
+            this.setAoip_id(mergeSub.getAoip_id());
+        }
+        if (mergeSub.getFname() != null) {
+            this.setFname(mergeSub.getFname());
+        }
+        if (mergeSub.getMi() != null) {
+            this.setMi(mergeSub.getMi());
+        }
+        if (mergeSub.getLname() != null) {
+            this.setLname(mergeSub.getLname());
+        }
+        if (mergeSub.getDob() != null) {
+            this.setDob(mergeSub.getDob());
+        }
+        if (mergeSub.getGender() != null) {
+            this.setGender(mergeSub.getGender());
+        }
+        if (mergeSub.getFroedert_mrn() != null) {
+            this.setFroedert_mrn(mergeSub.getFroedert_mrn());
+        }
+        if (mergeSub.getChw_id() != null) {
+            this.setChw_id(mergeSub.getChw_id());
+        }
+        if (mergeSub.getClinical_trial_id() != null) {
+            this.setClinical_trial_id(mergeSub.getClinical_trial_id());
+        }
+        if (mergeSub.getOther_id() != null) {
+            this.setOther_id(mergeSub.getOther_id());
+        }
+        if (mergeSub.getAddress1() != null) {
+            this.setAddress1(mergeSub.getAddress1());
+        }
+        if (mergeSub.getAddress2() != null) {
+            this.setAddress2(mergeSub.getAddress2());
+        }
+        if (mergeSub.getCity() != null) {
+            this.setCity(mergeSub.getCity());
+        }
+        if (mergeSub.getState() != null) {
+            this.setState(mergeSub.getState());
+        }
+        if (mergeSub.getZip() != null) {
+            this.setZip(mergeSub.getZip());
+        }
+        if (mergeSub.getCountry() != null) {
+            this.setCountry(mergeSub.getCountry());
+        }
+        if (mergeSub.getEmail() != null) {
+            this.setEmail(mergeSub.getEmail());
+        }
+        if (mergeSub.getPhone_personal() != null) {
+            this.setPhone_personal(mergeSub.getPhone_personal());
+        }
+        if (mergeSub.getPhone_work() != null) {
+            this.setPhone_work(mergeSub.getPhone_work());
+        }
+        if (mergeSub.getDx_pri() != null) {
+            this.setDx_pri(mergeSub.getDx_pri());
+        }
+        if (mergeSub.getDx_sec() != null) {
+            this.setDx_sec(mergeSub.getDx_sec());
+        }
+        if (mergeSub.getDx_other() != null) {
+            this.setDx_other(mergeSub.getDx_other());
+        }
+        if (mergeSub.getDx_other() != null) {
+            this.setDx_other(mergeSub.getDx_other());
+        }
+        if (mergeSub.getDilate_safe() != null) {
+            this.setDilate_safe(mergeSub.getDilate_safe());
+        }
+        if (mergeSub.getNystagmus() != null) {
+            this.setNystagmus(mergeSub.getNystagmus());
+        }
+        if (mergeSub.getUnstable_fixation() != null) {
+            this.setUnstable_fixation(mergeSub.getUnstable_fixation());
+        }
+        if (mergeSub.getEye_color() != null) {
+            this.setEye_color(mergeSub.getEye_color());
+        }
+        if (mergeSub.getReferral_type_id() != null && mergeSub.getReferral_type_id() != Referal.UNKNOWN) {
+            this.setReferral_type_id(mergeSub.getReferral_type_id());
+        }
+        return this;
+    }
 }

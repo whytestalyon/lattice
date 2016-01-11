@@ -21,6 +21,8 @@ public enum EncounterColumn {
     FEMALE_CHILD_BEARING_AGE("HF", 213),
     PREGNANT_OR_NURSING("HG", 214),
     ITINERARY("S", 18),
+    ETHNICITY("L", 11),
+    RACE("M", 12),
     NOT_APPLICABLE("-1", -1);
 
     private static final HashMap<Integer, EncounterColumn> colMap = new HashMap<>(50);

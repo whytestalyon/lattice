@@ -19,10 +19,19 @@ public abstract class ExamResult {
     private final int encounter_exam_type_id;
     private String created_by = "BWILK";
     private Date created_date = new Date();
+    private String notes = null;
 
     public ExamResult(int encounter_exam_type_id) {
         exam_result_id = idCntr.getAndIncrement();
         this.encounter_exam_type_id = encounter_exam_type_id;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
 }

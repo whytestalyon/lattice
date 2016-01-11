@@ -9,6 +9,10 @@ package com.bwc.lat.io.dom.res;
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class ConsentExamResult {
+public class ConsentExamResult extends ExamResult{
+
+    public ConsentExamResult(int encounter_exam_type_id) {
+        super(encounter_exam_type_id);
+    }
     
 }

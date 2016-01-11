@@ -5,6 +5,7 @@
  */
 package com.bwc.lat.io;
 
+import com.bwc.lat.io.dom.Bankq;
 import com.bwc.lat.io.exc.SubjectColumn;
 import com.bwc.lat.io.dom.Encounter;
 import com.bwc.lat.io.dom.ProviderMap;
@@ -190,6 +191,37 @@ public class ExcelParser {
             String provider = row.getCell(EncounterColumn.REFERING_MD.getColIndex()).getStringCellValue().trim();
             enc.setRef_pro_id(pm.getProviderCode(provider));
 
+            //set ethnicity
+            enc.getBankq().setEthnicity(row.getCell(EncounterColumn.ETHNICITY.getColIndex()).getStringCellValue().trim());
+
+            //set race
+            String race = row.getCell(EncounterColumn.RACE.getColIndex()).getStringCellValue();
+            if (race != null) {
+                Bankq bq = enc.getBankq();
+                switch (race) {
+                    case "indian":
+                        bq.setRace_indian("true");
+                        break;
+                    case "asian":
+                        bq.setRace_asian("true");
+                        break;
+                    case "hawaiian":
+                        bq.setRace_hawaiian("true");
+                        break;
+                    case "black":
+                        bq.setRace_black("true");
+                        break;
+                    case "white":
+                        bq.setRace_white("true");
+                        break;
+                    case "unreported":
+                        bq.setRace_unreported("true");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
         }
 
         //find earliest encounter to mark as first encounter for each subject
@@ -197,18 +229,17 @@ public class ExcelParser {
                 .collect(Collectors.groupingBy(Encounter::getSubject_id))
                 .values()
                 .forEach(ecns -> {
-                    if(ecns.size() == 1){
+                    if (ecns.size() == 1) {
                         ecns.get(0).setEncounter_type_id(1);
-                    }else{
+                    } else {
                         ecns.stream()
-                                .sorted((s1,s2) -> s1.getEncounter_start_date().compareTo(s2.getEncounter_start_date()))
-                                .findFirst()
-                                .get()
-                                .setEncounter_type_id(1);
+                        .sorted((s1, s2) -> s1.getEncounter_start_date().compareTo(s2.getEncounter_start_date()))
+                        .findFirst()
+                        .get()
+                        .setEncounter_type_id(1);
                     }
                 });
 
-        //merge the subjects into a single subject record per AOIP ID, then return final list
         return encounters;
     }
 
@@ -429,105 +460,17 @@ public class ExcelParser {
                     .reduce(identSub, (s1, s2) -> {
                         Subject retSub;
                         if (s1.getVisit_date() == null || (s2.getVisit_date() != null && s1.getVisit_date().compareTo(s2.getVisit_date()) < 0)) {
-                            //s1 comes before s2
-                            retSub = mergeSubjects(s1, s2);
+                            //s1 comes before s2, use s1 as base and merge s2 fields on top of s1 fields
+                            retSub = s1.merge(s2);
                         } else {
-                            //s2 comes before s1
-                            retSub = mergeSubjects(s2, s1);
+                            //s2 comes before s1, use s2 as base and merge s1 fields on top of s2 fields
+                            retSub = s2.merge(s1);
                         }
                         return retSub;
                     });
                 })
                 .filter(s -> s.getAoip_id() != null)
                 .collect(Collectors.toList());
-    }
-
-    private Subject mergeSubjects(Subject baseSub, Subject mergeSub) {
-        if (mergeSub.getAoip_id() != null) {
-            baseSub.setAoip_id(mergeSub.getAoip_id());
-        }
-        if (mergeSub.getFname() != null) {
-            baseSub.setFname(mergeSub.getFname());
-        }
-        if (mergeSub.getMi() != null) {
-            baseSub.setMi(mergeSub.getMi());
-        }
-        if (mergeSub.getLname() != null) {
-            baseSub.setLname(mergeSub.getLname());
-        }
-        if (mergeSub.getDob() != null) {
-            baseSub.setDob(mergeSub.getDob());
-        }
-        if (mergeSub.getGender() != null) {
-            baseSub.setGender(mergeSub.getGender());
-        }
-        if (mergeSub.getFroedert_mrn() != null) {
-            baseSub.setFroedert_mrn(mergeSub.getFroedert_mrn());
-        }
-        if (mergeSub.getChw_id() != null) {
-            baseSub.setChw_id(mergeSub.getChw_id());
-        }
-        if (mergeSub.getClinical_trial_id() != null) {
-            baseSub.setClinical_trial_id(mergeSub.getClinical_trial_id());
-        }
-        if (mergeSub.getOther_id() != null) {
-            baseSub.setOther_id(mergeSub.getOther_id());
-        }
-        if (mergeSub.getAddress1() != null) {
-            baseSub.setAddress1(mergeSub.getAddress1());
-        }
-        if (mergeSub.getAddress2() != null) {
-            baseSub.setAddress2(mergeSub.getAddress2());
-        }
-        if (mergeSub.getCity() != null) {
-            baseSub.setCity(mergeSub.getCity());
-        }
-        if (mergeSub.getState() != null) {
-            baseSub.setState(mergeSub.getState());
-        }
-        if (mergeSub.getZip() != null) {
-            baseSub.setZip(mergeSub.getZip());
-        }
-        if (mergeSub.getCountry() != null) {
-            baseSub.setCountry(mergeSub.getCountry());
-        }
-        if (mergeSub.getEmail() != null) {
-            baseSub.setEmail(mergeSub.getEmail());
-        }
-        if (mergeSub.getPhone_personal() != null) {
-            baseSub.setPhone_personal(mergeSub.getPhone_personal());
-        }
-        if (mergeSub.getPhone_work() != null) {
-            baseSub.setPhone_work(mergeSub.getPhone_work());
-        }
-        if (mergeSub.getDx_pri() != null) {
-            baseSub.setDx_pri(mergeSub.getDx_pri());
-        }
-        if (mergeSub.getDx_sec() != null) {
-            baseSub.setDx_sec(mergeSub.getDx_sec());
-        }
-        if (mergeSub.getDx_other() != null) {
-            baseSub.setDx_other(mergeSub.getDx_other());
-        }
-        if (mergeSub.getDx_other() != null) {
-            baseSub.setDx_other(mergeSub.getDx_other());
-        }
-        if (mergeSub.getDilate_safe() != null) {
-            baseSub.setDilate_safe(mergeSub.getDilate_safe());
-        }
-        if (mergeSub.getNystagmus() != null) {
-            baseSub.setNystagmus(mergeSub.getNystagmus());
-        }
-        if (mergeSub.getUnstable_fixation() != null) {
-            baseSub.setUnstable_fixation(mergeSub.getUnstable_fixation());
-        }
-        if (mergeSub.getEye_color() != null) {
-            baseSub.setEye_color(mergeSub.getEye_color());
-        }
-        if (mergeSub.getReferral_type_id() != null && mergeSub.getReferral_type_id() != Referal.UNKNOWN) {
-            baseSub.setReferral_type_id(mergeSub.getReferral_type_id());
-        }
-        return baseSub;
     }
 
 }
