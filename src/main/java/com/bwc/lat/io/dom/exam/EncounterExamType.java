@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.bwc.lat.io.dom;
+package com.bwc.lat.io.dom.exam;
 
 import com.bwc.lat.io.dom.res.ExamResult;
 import java.util.Date;
@@ -19,16 +19,14 @@ public class EncounterExamType {
     private static final AtomicInteger idCntr = new AtomicInteger(10000);
     private final int encounter_exam_type_id;
     private final int exam_type_id;
-    private final int encounter_id;
     private final String created_by = "BWILK";
     private final Date created_date = new Date();
     private Integer personnel_id;
     private final LinkedList<ExamResult> results = new LinkedList<>();
 
-    public EncounterExamType(int exam_type_id, int encounter_id) {
+    public EncounterExamType(int exam_type_id) {
         this.encounter_exam_type_id = idCntr.getAndIncrement();
         this.exam_type_id = exam_type_id;
-        this.encounter_id = encounter_id;
     }
 
     public Integer getPersonnel_id() {
@@ -78,10 +76,6 @@ public class EncounterExamType {
         return exam_type_id;
     }
 
-    public int getEncounter_id() {
-        return encounter_id;
-    }
-
     public String getCreated_by() {
         return created_by;
     }
@@ -97,4 +91,10 @@ public class EncounterExamType {
     public void addResult(ExamResult result) {
         results.add(result);
     }
+
+    @Override
+    public String toString() {
+        return "EncounterExamType{" + "encounter_exam_type_id=" + encounter_exam_type_id + ", exam_type_id=" + exam_type_id + ", created_by=" + created_by + ", created_date=" + created_date + ", personnel_id=" + personnel_id + ", results=" + results + '}';
+    }
+    
 }

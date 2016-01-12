@@ -11,21 +11,21 @@ import com.bwc.lat.io.dom.Encounter;
 import com.bwc.lat.io.dom.ProviderMap;
 import com.bwc.lat.io.dom.Referal;
 import com.bwc.lat.io.dom.Subject;
+import com.bwc.lat.io.dom.exam.ConsentingExam;
+import com.bwc.lat.io.dom.exam.OccularHealthExam;
 import com.bwc.lat.io.exc.EncounterColumn;
+import com.bwc.lat.io.exc.ExamColumn;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -221,7 +221,8 @@ public class ExcelParser {
                         break;
                 }
             }
-
+            
+            addExams(enc, row);
         }
 
         //find earliest encounter to mark as first encounter for each subject
@@ -471,6 +472,22 @@ public class ExcelParser {
                 })
                 .filter(s -> s.getAoip_id() != null)
                 .collect(Collectors.toList());
+    }
+
+    private void addExams(Encounter enc, Row row) {
+        //check for occular health exam, add if "yes" is in column add it to list of exams to return
+        if (row.getCell(ExamColumn.OCCULAR_HEALTH_QUESTIONAIRE.getColIndex()).getStringCellValue().trim().equals("Yes")) {
+            enc.addExam(new OccularHealthExam());
+        }
+
+        //check for consenting perssonel being list, if so add as an exam
+        String consenting = row.getCell(ExamColumn.STAFF_CONSENTING.getColIndex()).getStringCellValue().trim();
+        if (!consenting.isEmpty() && !consenting.equals("-")) {
+            ConsentingExam exam = new ConsentingExam();
+            exam.setPersonnel_id(consenting);
+            enc.addExam(exam);
+        }
+
     }
 
 }

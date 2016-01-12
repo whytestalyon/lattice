@@ -5,7 +5,11 @@
  */
 package com.bwc.lat.io.dom;
 
+import com.bwc.lat.io.dom.exam.EncounterExamType;
+import com.bwc.lat.io.dom.res.ExamResult;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -47,6 +51,7 @@ public class Encounter {
     private Integer pregnant_or_nursing = null;
     private Integer female_child_bearing_age = null;
     private final Bankq bankq;
+    private final List<EncounterExamType> exams = new LinkedList<>();
 
     public Encounter(int subject_id, int encounter_type_id) {
         this.encounter_id = idCntr.getAndIncrement();
@@ -273,6 +278,14 @@ public class Encounter {
 
     public void setEncounter_type_id(int encounter_type_id) {
         this.encounter_type_id = encounter_type_id;
+    }
+
+    public boolean addExam(EncounterExamType er) {
+        return exams.add(er);
+    }
+
+    public List<EncounterExamType> getExams() {
+        return exams;
     }
 
     @Override

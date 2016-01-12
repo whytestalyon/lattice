@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.bwc.lat.io.dom.res;
+package com.bwc.lat.io.dom.exam;
 
 /**
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class ConsentExamResult extends ExamResult{
+public class OccularHealthExam extends EncounterExamType {
 
-    public ConsentExamResult(int encounter_exam_type_id) {
-        super(encounter_exam_type_id);
+    public OccularHealthExam() {
+        super(2);
     }
     
 }

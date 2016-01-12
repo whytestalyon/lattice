@@ -20,6 +20,7 @@ public abstract class ExamResult {
     private String created_by = "BWILK";
     private Date created_date = new Date();
     private String notes = null;
+    private boolean isFileResult = false;
 
     public ExamResult(int encounter_exam_type_id) {
         exam_result_id = idCntr.getAndIncrement();
@@ -32,6 +33,14 @@ public abstract class ExamResult {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public boolean isIsFileResult() {
+        return isFileResult;
+    }
+
+    public void setIsFileResult(boolean isFileResult) {
+        this.isFileResult = isFileResult;
     }
 
 }
