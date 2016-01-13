@@ -51,15 +51,17 @@ public class LatticeLoader {
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
         List<Subject> subjects = ep.getSubjects();
-        int sid = subjects.stream().filter(s -> s.getAoip_id().equals("JC_0002")).findFirst().get().getSubject_id();
-        System.out.println("ID: " + sid);
-        subjects.stream()
-                .filter(s -> s.getAoip_id().equals("JC_0002"))
-                .forEach(System.out::println);
-
+//        int sid = subjects.stream().filter(s -> s.getAoip_id().equals("JC_0002")).findFirst().get().getSubject_id();
+//        System.out.println("ID: " + sid);
+//        subjects.stream()
+//                .filter(s -> s.getAoip_id().equals("JC_0002"))
+//                .forEach(System.out::println);
+//
         List<Encounter> encounters = ep.getEncounters(subjects);
         encounters.stream()
-                .filter(e -> e.getSubject_id() == sid)
+//                .filter(e -> e.getSubject_id() == sid)
+                .filter(e -> !e.getExams().isEmpty())
+                .limit(10)
                 .forEach(System.out::println);
     }
 
