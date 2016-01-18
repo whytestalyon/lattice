@@ -3,16 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.bwc.lat.io.dom.exam;
+package com.bwc.lat.io.dom.res;
 
 /**
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class ConsentingExam extends EncounterExamType {
+public class SkinPigment extends ExamResult{
+    private String lvalue;
 
-    public ConsentingExam() {
-        super(ExamType.CONSENT);
+    public SkinPigment(String lvalue) {
+        this.lvalue = lvalue;
     }
 
+    public String getLvalue() {
+        return lvalue;
+    }
+    
 }

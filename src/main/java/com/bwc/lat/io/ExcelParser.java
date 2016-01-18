@@ -12,13 +12,41 @@ import com.bwc.lat.io.dom.ProviderMap;
 import com.bwc.lat.io.dom.Referal;
 import com.bwc.lat.io.dom.Subject;
 import com.bwc.lat.io.dom.exam.ConsentingExam;
+import com.bwc.lat.io.dom.exam.EncounterExamType;
+import com.bwc.lat.io.dom.exam.ExamType;
 import com.bwc.lat.io.dom.exam.OccularHealthExam;
+import com.bwc.lat.io.dom.res.AOExamResult;
+import com.bwc.lat.io.dom.res.AOHRRExamResult;
+import com.bwc.lat.io.dom.res.AmslerGridExamResult;
+import com.bwc.lat.io.dom.res.AutoRefractorExamResult;
+import com.bwc.lat.io.dom.res.ContrastSensitivityExamResult;
+import com.bwc.lat.io.dom.res.D15ExamResult;
+import com.bwc.lat.io.dom.res.DilationExamResult;
+import com.bwc.lat.io.dom.res.FundusVisucamExamResult;
+import com.bwc.lat.io.dom.res.Hue100ExamResult;
+import com.bwc.lat.io.dom.res.IOLMasterExamResult;
+import com.bwc.lat.io.dom.res.IshiharaExamResult;
+import com.bwc.lat.io.dom.res.MDVisitExamResult;
+import com.bwc.lat.io.dom.res.NeitzExamResult;
+import com.bwc.lat.io.dom.res.OCTBioptigenExamResult;
+import com.bwc.lat.io.dom.res.OCTCirrusDilatedExamResult;
+import com.bwc.lat.io.dom.res.OCTCirrusUndilatedExamResult;
+import com.bwc.lat.io.dom.res.OCTOptovueExamResult;
+import com.bwc.lat.io.dom.res.OptosExamResult;
+import com.bwc.lat.io.dom.res.PedigreeExamResult;
+import com.bwc.lat.io.dom.res.RayleighExamResult;
+import com.bwc.lat.io.dom.res.SkinPigment;
+import com.bwc.lat.io.dom.res.SpectrailsExamResult;
+import com.bwc.lat.io.dom.res.SteroExamResult;
+import com.bwc.lat.io.dom.res.VisualAccuityExamResult;
 import com.bwc.lat.io.exc.EncounterColumn;
 import com.bwc.lat.io.exc.ExamColumn;
+import com.bwc.lat.io.exc.Eye;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -221,8 +249,8 @@ public class ExcelParser {
                         break;
                 }
             }
-            
-            addExams(enc, row);
+
+            addExamsToEncounter(enc, row);
         }
 
         //find earliest encounter to mark as first encounter for each subject
@@ -474,7 +502,7 @@ public class ExcelParser {
                 .collect(Collectors.toList());
     }
 
-    private void addExams(Encounter enc, Row row) {
+    private void addExamsToEncounter(Encounter enc, Row row) {
         //check for occular health exam, add if "yes" is in column add it to list of exams to return
         if (row.getCell(ExamColumn.OCCULAR_HEALTH_QUESTIONAIRE.getColIndex()).getStringCellValue().trim().equals("Yes")) {
             enc.addExam(new OccularHealthExam());
@@ -488,6 +516,1013 @@ public class ExcelParser {
             enc.addExam(exam);
         }
 
+        //check for the Neitz exam
+        String dat = row.getCell(ExamColumn.NEITZ.getColIndex()).getStringCellValue().trim();
+        if (!dat.isEmpty() && !dat.equals("-")) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_NEITZ);
+            exam.addResult(new NeitzExamResult(dat));
+            enc.addExam(exam);
+        }
+
+        //check for AOHRR exam
+        String[] data = new String[]{
+            row.getCell(ExamColumn.AOHRR_TYPE.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOHRR_DVALUE.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_AOHRR);
+            exam.addResult(new AOHRRExamResult(data[0], data[1]));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OD saturated trial 1
+        data = new String[]{
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        Cell[] cells = new Cell[]{
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    true,
+                    1,
+                    Eye.OD
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OD saturated trial 2
+        data = new String[]{
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_2_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    true,
+                    2,
+                    Eye.OD
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OS saturated trial 1
+        data = new String[]{
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_1_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    true,
+                    1,
+                    Eye.OS
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OS saturated trial 2
+        data = new String[]{
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_OS_TRIAL_2_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    true,
+                    2,
+                    Eye.OS
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 Binocular saturated trial 1
+        data = new String[]{
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_1_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    true,
+                    1,
+                    Eye.BINOCULAR
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 Binocular saturated trial 2
+        data = new String[]{
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_SATURATED_BINOCULAR_TRIAL_2_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    true,
+                    2,
+                    Eye.BINOCULAR
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OD desaturated trial 1
+        data = new String[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_1_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    false,
+                    1,
+                    Eye.OD
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OD desaturated trial 2
+        data = new String[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OD_TRIAL_2_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    false,
+                    2,
+                    Eye.OD
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OS desaturated trial 1
+        data = new String[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_1_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    false,
+                    1,
+                    Eye.OS
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 OS desaturated trial 2
+        data = new String[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_OS_TRIAL_2_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    false,
+                    2,
+                    Eye.OS
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 Binocular desaturated trial 1
+        data = new String[]{
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_1_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    false,
+                    1,
+                    Eye.BINOCULAR
+            ));
+            enc.addExam(exam);
+        }
+
+        //check for D15 Binocular desaturated trial 2
+        data = new String[]{
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.D15_DESATURATED_BINOCULAR_TRIAL_2_MOI_CONFUSION_INDEX.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
+            exam.addResult(new D15ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    false,
+                    2,
+                    Eye.BINOCULAR
+            ));
+            enc.addExam(exam);
+        }
+
+        //check Rayleigh OD exam
+        cells = new Cell[]{
+            row.getCell(ExamColumn.RAYLEIGH_OD_RANGE_START.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OD_RANGE_END.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OD_MID_POINT.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OD_YELLOW_1.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OD_YELLOW_2.getColIndex())
+        };
+        if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_RAYLEIGH);
+            exam.addResult(new RayleighExamResult(
+                    (int) Math.round(cells[0].getNumericCellValue()),
+                    (int) Math.round(cells[1].getNumericCellValue()),
+                    (int) Math.round(cells[2].getNumericCellValue()),
+                    (int) Math.round(cells[3].getNumericCellValue()),
+                    (int) Math.round(cells[4].getNumericCellValue()),
+                    Eye.OD
+            ));
+            enc.addExam(exam);
+        }
+
+        //check Rayleigh OS exam
+        cells = new Cell[]{
+            row.getCell(ExamColumn.RAYLEIGH_OS_RANGE_START.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OS_RANGE_END.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OS_MID_POINT.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OS_YELLOW_1.getColIndex()),
+            row.getCell(ExamColumn.RAYLEIGH_OS_YELLOW_2.getColIndex())
+        };
+        if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_RAYLEIGH);
+            exam.addResult(new RayleighExamResult(
+                    (int) Math.round(cells[0].getNumericCellValue()),
+                    (int) Math.round(cells[1].getNumericCellValue()),
+                    (int) Math.round(cells[2].getNumericCellValue()),
+                    (int) Math.round(cells[3].getNumericCellValue()),
+                    (int) Math.round(cells[4].getNumericCellValue()),
+                    Eye.OS
+            ));
+            enc.addExam(exam);
+        }
+
+        //check Hue 100 OD exam 
+        data = new String[]{
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_CLASSICAL_NOTES.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_MOI_CONFUSION_INDEX.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OD_CLASSICAL_TOTAL_ERROR_SCORE.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_100HUE);
+            exam.addResult(new Hue100ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    cells[6].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    Eye.OD
+            ));
+            enc.addExam(exam);
+        }
+
+        //check Hue 100 OS exam 
+        data = new String[]{
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_CLASSICAL_NOTES.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_MOI_CONFUSION_INDEX.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_OS_CLASSICAL_TOTAL_ERROR_SCORE.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_100HUE);
+            exam.addResult(new Hue100ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    cells[6].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    Eye.OS
+            ));
+            enc.addExam(exam);
+        }
+
+        //check Hue 100 Binocular exam 
+        data = new String[]{
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_CLASSICAL_NOTES.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_NOTES.getColIndex()).getStringCellValue().trim()
+        };
+        cells = new Cell[]{
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_ANGLE.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_MAJOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_MINOR_RADIUS.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_TOTAL_ERROR_SCORE.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_SELECTIVITY_INDEX.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_MOI_CONFUSION_INDEX.getColIndex()),
+            row.getCell(ExamColumn.ONE_HUNDRED_HUE_BINOCULAR_CLASSICAL_TOTAL_ERROR_SCORE.getColIndex())
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))
+                || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_100HUE);
+            exam.addResult(new Hue100ExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    cells[6].getNumericCellValue(),
+                    data[0],
+                    data[1],
+                    Eye.BINOCULAR
+            ));
+            enc.addExam(exam);
+        }
+
+        //check Ishihara 24 exam 
+        data = new String[]{
+            row.getCell(ExamColumn.ISHIHARA_24_CORRECT_ANSWERS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.ISHIHARA_24_TYPE.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_ISHIHARA);
+            exam.addResult(new IshiharaExamResult(24, data[0], data[1]));
+            enc.addExam(exam);
+        }
+
+        //check Ishihara 38 exam 
+        data = new String[]{
+            row.getCell(ExamColumn.ISHIHARA_38_CORRECT_ANSWERS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.ISHIHARA_38_TYPE.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.COLOR_ISHIHARA);
+            exam.addResult(new IshiharaExamResult(38, data[0], data[1]));
+            enc.addExam(exam);
+        }
+
+        //check CAD Test exam
+        //TBD, no definition in results table (yet)
+        //check dilation exam
+        data = new String[]{
+            row.getCell(ExamColumn.DILATION_PHENYLPHRINE_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.DILATION_PHENYLPHRINE_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.DILATION_TROPICAMIDE_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.DILATION_TROPICAMIDE_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.DILATION);
+            exam.addResult(new DilationExamResult((!data[0].isEmpty() && !data[0].equals("-")) || (!data[1].isEmpty() && !data[1].equals("-")), (!data[2].isEmpty() && !data[2].equals("-")) || (!data[3].isEmpty() && !data[3].equals("-"))));
+            enc.addExam(exam);
+        }
+
+        //check PERIMETRY, Crosshair, disease, fixation, HVF all exam
+        //TBD mapping from excel sheet to database table not clear
+        //check for the best corrected visual accuity tests (BCVA)
+        data = new String[]{
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_SPHERE.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_SPHERE.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_CYLINDER.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_CYLINDER.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_AXIS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_AXIS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_VA.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_VA.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.BCVA_ETDRS_BINOCULAR_VA.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-") && !field.equals("No"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.VISUAL_ACUITY);
+            exam.addResult(new VisualAccuityExamResult(
+                    "bcva",
+                    "etdrs",
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    data[4],
+                    data[5],
+                    data[6],
+                    data[7],
+                    data[8])
+            );
+            enc.addExam(exam);
+        }
+
+        //check IOL Master exam
+        cells = new Cell[]{
+            row.getCell(ExamColumn.IOL_MASTER_OD_K1.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OD_K2.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OS_K1.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OS_K2.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OD_AL.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OS_AL.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OD_ACD.getColIndex()),
+            row.getCell(ExamColumn.IOL_MASTER_OS_ACD.getColIndex()),};
+        if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.IOL_MASTER);
+            exam.addResult(new IOLMasterExamResult(
+                    cells[0].getNumericCellValue(),
+                    cells[1].getNumericCellValue(),
+                    cells[2].getNumericCellValue(),
+                    cells[3].getNumericCellValue(),
+                    cells[4].getNumericCellValue(),
+                    cells[5].getNumericCellValue(),
+                    cells[6].getNumericCellValue(),
+                    cells[7].getNumericCellValue()
+            ));
+            enc.addExam(exam);
+        }
+
+        //check skin pigment exam
+        data = new String[]{
+            row.getCell(ExamColumn.SKIN_PIGMENT.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.SKIN_PIGMENT);
+            exam.addResult(new SkinPigment(data[0]));
+            enc.addExam(exam);
+        }
+
+        //Amsler exam
+        //check skin pigment exam
+        data = new String[]{
+            row.getCell(ExamColumn.AMSLER_OD_RESULT.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AMSLER_OS_RESULT.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AMSLER_GRID);
+            exam.addResult(new AmslerGridExamResult(data[0], data[1]));
+            enc.addExam(exam);
+        }
+
+        //stereo exam
+        //check skin pigment exam
+        data = new String[]{
+            row.getCell(ExamColumn.STEREO.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.STEREO_VISION);
+            exam.addResult(new SteroExamResult(data[0]));
+            enc.addExam(exam);
+        }
+
+        //Contrast sensitivity
+        cells = new Cell[]{
+            row.getCell(ExamColumn.CONTRAST_SENSITIVITY.getColIndex())
+        };
+        if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
+            EncounterExamType exam = new EncounterExamType(ExamType.CONTRAST_SENSITIVITY);
+            exam.addResult(new ContrastSensitivityExamResult(cells[0].getNumericCellValue()));
+            enc.addExam(exam);
+        }
+
+        //Autorefractor
+        data = new String[]{
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_SPHERE.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_CYLINDER.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_AXIS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_SPHERE.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_CYLINDER.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_AXIS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AUTOREFRACTION);
+            exam.addResult(new AutoRefractorExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    data[4],
+                    data[5]
+            ));
+            enc.addExam(exam);
+        }
+
+        //MD visit
+        data = new String[]{
+            row.getCell(ExamColumn.MD_VISIT_UNDILATED.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.MD_VISIT_DILATED.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.MD_VISIT);
+            exam.addResult(new MDVisitExamResult(
+                    data[0],
+                    data[1]
+            ));
+            enc.addExam(exam);
+        }
+
+        //pedigree
+        data = new String[]{
+            row.getCell(ExamColumn.GENETICS_PEDIGREE.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.PEDIGREE);
+            exam.addResult(new PedigreeExamResult(
+                    data[0]
+            ));
+            enc.addExam(exam);
+        }
+
+        //genetics, maybe? May not be an exam result, need further guidance
+        //lunch exam result
+        data = new String[]{
+            row.getCell(ExamColumn.LUNCH.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.LUNCH);
+            enc.addExam(exam);
+        }
+
+        //OPTOS
+        data = new String[]{
+            row.getCell(ExamColumn.OPTOS_COLOR_OPTOS_COLOR_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OPTOS_COLOR_OPTOS_COLOR_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OPTOS_AF_OPTOS_AF_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OPTOS_AF_OPTOS_AF_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.FUNDUS_OPTOS);
+            exam.addResult(new OptosExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //Spectralis AF
+        data = new String[]{
+            row.getCell(ExamColumn.SPECTRALIS_AF_SPECTRALIS_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.SPECTRALIS_AF_SPECTRALIS_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.SPECTRALIS);
+            exam.addResult(new SpectrailsExamResult(
+                    data[0],
+                    data[1]
+            ));
+            enc.addExam(exam);
+        }
+
+        //fundus visucam
+        data = new String[]{
+            row.getCell(ExamColumn.FUNDUS_VISUCAM_VISUCAM_30_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.FUNDUS_VISUCAM_VISUCAM_30_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.FUNDUS_VISUCAM_VISUCAM_45_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.FUNDUS_VISUCAM_VISUCAM_45_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.FUNDUS_VISUCAM);
+            exam.addResult(new FundusVisucamExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //OCT Optovue
+        data = new String[]{
+            row.getCell(ExamColumn.OCT_OPTOVUE_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OCT_OPTOVUE_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.OCT_OPTOVUE);
+            exam.addResult(new OCTOptovueExamResult(
+                    data[0],
+                    data[1]
+            ));
+            enc.addExam(exam);
+        }
+
+        //OCT Cirrus undilated
+        data = new String[]{
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_UNDILATED_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_UNDILATED_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.OCT_CIRRUS_UNDILATED);
+            exam.addResult(new OCTCirrusUndilatedExamResult(
+                    data[0],
+                    data[1]
+            ));
+            enc.addExam(exam);
+        }
+
+        //OCT Cirrus dilated
+        data = new String[]{
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_DILATED_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_DILATED_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.OCT_CIRRUS_DILATED);
+            exam.addResult(new OCTCirrusDilatedExamResult(
+                    data[0],
+                    data[1]
+            ));
+            enc.addExam(exam);
+        }
+
+        //OCT Bioptigen
+        data = new String[]{
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_CLINICAL_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_CLINICAL_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_GLAUCOMA_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_GLAUCOMA_OS.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.OCT_BIOPTIGEN);
+            exam.addResult(new OCTBioptigenExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO 2
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_2_0_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_0_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_0_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_0_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_SLO_2_0_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO 2.1
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_2_1_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_1_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_1_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_1_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_SLO_2_1_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO 2.2
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_2_2_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_2_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_2_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_2_2_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_SLO_2_2_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO 3
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_3_0_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_3_0_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_3_0_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_3_0_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_SLO_3_0_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO 4
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_4_0_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_4_0_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_4_0_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_4_0_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_SLO_4_0_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AO FLOOD
+        data = new String[]{
+            row.getCell(ExamColumn.AO_FLOOD_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AO_FLOOD_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AO_FLOOD_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AO_FLOOD_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_FLOOD_1_0_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AO FLOOD 1.1
+        data = new String[]{
+            row.getCell(ExamColumn.AO_FLOOD_1_1_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AO_FLOOD_1_1_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AO_FLOOD_1_1_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AO_FLOOD_1_1_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_FLOOD_1_1_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO MEH
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_MEH_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_MEH_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_MEH_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_MEH_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_MEH_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
+
+        //AOSLO NYEEI
+        data = new String[]{
+            row.getCell(ExamColumn.AOSLO_NYEEI_OD.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_NYEEI_OD_FIXATION.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_NYEEI_OS.getColIndex()).getStringCellValue().trim(),
+            row.getCell(ExamColumn.AOSLO_NYEEI_OS_FIXATION.getColIndex()).getStringCellValue().trim()
+        };
+        if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
+            EncounterExamType exam = new EncounterExamType(ExamType.AO_NYEEI_IMAGING);
+            exam.addResult(new AOExamResult(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3]
+            ));
+            enc.addExam(exam);
+        }
     }
 
 }

@@ -12,7 +12,7 @@ package com.bwc.lat.io.dom.exam;
 public class OccularHealthExam extends EncounterExamType {
 
     public OccularHealthExam() {
-        super(2);
+        super(ExamType.OHQ);
     }
     
 }

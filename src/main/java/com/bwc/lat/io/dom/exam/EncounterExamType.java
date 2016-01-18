@@ -18,15 +18,15 @@ public class EncounterExamType {
 
     private static final AtomicInteger idCntr = new AtomicInteger(10000);
     private final int encounter_exam_type_id;
-    private final int exam_type_id;
+    private final ExamType exam_type;
     private final String created_by = "BWILK";
     private final Date created_date = new Date();
     private Integer personnel_id;
     private final LinkedList<ExamResult> results = new LinkedList<>();
 
-    public EncounterExamType(int exam_type_id) {
+    public EncounterExamType(ExamType exam_type) {
         this.encounter_exam_type_id = idCntr.getAndIncrement();
-        this.exam_type_id = exam_type_id;
+        this.exam_type = exam_type;
     }
 
     public Integer getPersonnel_id() {
@@ -72,8 +72,8 @@ public class EncounterExamType {
         return encounter_exam_type_id;
     }
 
-    public int getExam_type_id() {
-        return exam_type_id;
+    public ExamType getExam_type() {
+        return exam_type;
     }
 
     public String getCreated_by() {
@@ -94,7 +94,7 @@ public class EncounterExamType {
 
     @Override
     public String toString() {
-        return "EncounterExamType{" + "encounter_exam_type_id=" + encounter_exam_type_id + ", exam_type_id=" + exam_type_id + ", created_by=" + created_by + ", created_date=" + created_date + ", personnel_id=" + personnel_id + ", results=" + results + '}';
+        return "EncounterExamType{" + "encounter_exam_type_id=" + encounter_exam_type_id + ", exam_type_id=" + exam_type + ", created_by=" + created_by + ", created_date=" + created_date + ", personnel_id=" + personnel_id + ", results=" + results + '}';
     }
     
 }

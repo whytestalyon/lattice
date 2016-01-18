@@ -7,7 +7,7 @@
   <entry key="database_name">irisload</entry>
   <entry key="user_name">irisload</entry>
   <entry key="password">pepper3316</entry>
-  <entry key="server_name">irisdev.eye.mcw.edu</entry>
+  <entry key="server_name">localhost</entry>
   <entry key="port_number">3306</entry>
 
 

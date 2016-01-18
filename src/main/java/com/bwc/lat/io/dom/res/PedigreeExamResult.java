@@ -3,16 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.bwc.lat.io.dom.exam;
+package com.bwc.lat.io.dom.res;
 
 /**
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class ConsentingExam extends EncounterExamType {
+public class PedigreeExamResult extends ExamResult{
+    private String pedigree;
 
-    public ConsentingExam() {
-        super(ExamType.CONSENT);
+    public PedigreeExamResult(String pedigree) {
+        this.pedigree = pedigree;
     }
 
+    public String getPedigree() {
+        return pedigree;
+    }
+    
+    
 }

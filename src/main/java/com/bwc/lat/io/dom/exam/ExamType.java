@@ -17,6 +17,7 @@ public enum ExamType {
     OCTOPUS(4),
     OPKO(5),
     OCT_CIRRUS_UNDILATED(14),
+    OCT_OPTOVUE(133),
     COLOR_NEITZ(15),
     COLOR_AOHRR(16),
     IOL_MASTER(18),
@@ -56,7 +57,11 @@ public enum ExamType {
     AO_FLOOD_1_1_IMAGING(131),
     AO_FLOOD_1_1_NOTES(132),
     AO_SLO_4_0_IMAGING(133),
-    AO_SLO_4_0_NOTES(134);
+    AO_SLO_4_0_NOTES(134),
+    AO_MEH_IMAGING(-1),
+    AO_MEH_NOTES(-1),
+    AO_NYEEI_IMAGING(-1),
+    AO_NYEEI_NOTES(-1);
 
     private final int id;
 
