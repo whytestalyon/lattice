@@ -44,11 +44,11 @@ public class LatticeLoader {
 
         //connect to the database using the connection informatyion
         //specified in the properties file
-        dbUtils = new JDBCUtilities(connectionProps.getAbsolutePath());
-        Class.forName(dbUtils.getDriver());
-        databaseConnection = dbUtils.getConnection();
-        System.out.println("Connected to Lattice database!");
-        
+//        dbUtils = new JDBCUtilities(connectionProps.getAbsolutePath());
+//        Class.forName(dbUtils.getDriver());
+//        databaseConnection = dbUtils.getConnection();
+//        System.out.println("Connected to Lattice database!");
+//        
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
         List<Subject> subjects = ep.getSubjects();

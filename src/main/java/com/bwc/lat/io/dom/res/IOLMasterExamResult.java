@@ -9,11 +9,11 @@ package com.bwc.lat.io.dom.res;
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class IOLMasterExamResult extends ExamResult{
+public class IOLMasterExamResult extends ExamResult {
 
-    private double k1_od, k2_od, k1_os, k2_os, axial_od, axial_os, acd_od, acd_os;
+    private Double k1_od, k2_od, k1_os, k2_os, axial_od, axial_os, acd_od, acd_os;
 
-    public IOLMasterExamResult(double k1_od, double k2_od, double k1_os, double k2_os, double axial_od, double axial_os, double acd_od, double acd_os) {
+    public IOLMasterExamResult(Double k1_od, Double k2_od, Double k1_os, Double k2_os, Double axial_od, Double axial_os, Double acd_od, Double acd_os) {
         this.k1_od = k1_od;
         this.k2_od = k2_od;
         this.k1_os = k1_os;
@@ -24,35 +24,35 @@ public class IOLMasterExamResult extends ExamResult{
         this.acd_os = acd_os;
     }
 
-    public double getK1_od() {
+    public Double getK1_od() {
         return k1_od;
     }
 
-    public double getK2_od() {
+    public Double getK2_od() {
         return k2_od;
     }
 
-    public double getK1_os() {
+    public Double getK1_os() {
         return k1_os;
     }
 
-    public double getK2_os() {
+    public Double getK2_os() {
         return k2_os;
     }
 
-    public double getAxial_od() {
+    public Double getAxial_od() {
         return axial_od;
     }
 
-    public double getAxial_os() {
+    public Double getAxial_os() {
         return axial_os;
     }
 
-    public double getAcd_od() {
+    public Double getAcd_od() {
         return acd_od;
     }
 
-    public double getAcd_os() {
+    public Double getAcd_os() {
         return acd_os;
     }
 

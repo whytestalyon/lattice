@@ -11,13 +11,13 @@ package com.bwc.lat.io.dom.res;
  */
 public class ContrastSensitivityExamResult extends ExamResult {
 
-    private double contrast;
+    private Double contrast;
 
-    public ContrastSensitivityExamResult(double contrast) {
+    public ContrastSensitivityExamResult(Double contrast) {
         this.contrast = contrast;
     }
 
-    public double getContrast() {
+    public Double getContrast() {
         return contrast;
     }
 

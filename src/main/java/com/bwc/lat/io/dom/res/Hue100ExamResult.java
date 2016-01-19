@@ -13,11 +13,11 @@ import com.bwc.lat.io.exc.Eye;
  */
 public class Hue100ExamResult extends ExamResult {
 
-    private final double MOI_Angle, MOI_Major_Radius, MOI_Minor_Radius, MOI_Total_Error_Score, MOI_Selectivity_Index, MOI_Confusion_Index, hue100_classical_error_score;
+    private final Double MOI_Angle, MOI_Major_Radius, MOI_Minor_Radius, MOI_Total_Error_Score, MOI_Selectivity_Index, MOI_Confusion_Index, hue100_classical_error_score;
     private final String hue100_classical_notes, MOI_Notes ;
     private final Eye eye;
 
-    public Hue100ExamResult(double MOI_Angle, double MOI_Major_Radius, double MOI_Minor_Radius, double MOI_Total_Error_Score, double MOI_Selectivity_Index, double MOI_Confusion_Index, double hue100_classical_error_score, String hue100_classical_notes, String MOI_Notes, Eye eye) {
+    public Hue100ExamResult(Double MOI_Angle, Double MOI_Major_Radius, Double MOI_Minor_Radius, Double MOI_Total_Error_Score, Double MOI_Selectivity_Index, Double MOI_Confusion_Index, Double hue100_classical_error_score, String hue100_classical_notes, String MOI_Notes, Eye eye) {
         this.MOI_Angle = MOI_Angle;
         this.MOI_Major_Radius = MOI_Major_Radius;
         this.MOI_Minor_Radius = MOI_Minor_Radius;
@@ -30,7 +30,7 @@ public class Hue100ExamResult extends ExamResult {
         this.eye = eye;
     }
 
-    public double getHue100_classical_error_score() {
+    public Double getHue100_classical_error_score() {
         return hue100_classical_error_score;
     }
 
@@ -42,27 +42,27 @@ public class Hue100ExamResult extends ExamResult {
         return eye;
     }
 
-    public double getMOI_Angle() {
+    public Double getMOI_Angle() {
         return MOI_Angle;
     }
 
-    public double getMOI_Major_Radius() {
+    public Double getMOI_Major_Radius() {
         return MOI_Major_Radius;
     }
 
-    public double getMOI_Minor_Radius() {
+    public Double getMOI_Minor_Radius() {
         return MOI_Minor_Radius;
     }
 
-    public double getMOI_Total_Error_Score() {
+    public Double getMOI_Total_Error_Score() {
         return MOI_Total_Error_Score;
     }
 
-    public double getMOI_Selectivity_Index() {
+    public Double getMOI_Selectivity_Index() {
         return MOI_Selectivity_Index;
     }
 
-    public double getMOI_Confusion_Index() {
+    public Double getMOI_Confusion_Index() {
         return MOI_Confusion_Index;
     }
 

@@ -13,13 +13,13 @@ import com.bwc.lat.io.exc.Eye;
  */
 public class D15ExamResult extends ExamResult {
 
-    private final double MOI_Angle, MOI_Major_Radius, MOI_Minor_Radius, MOI_Total_Error_Score, MOI_Selectivity_Index, MOI_Confusion_Index;
+    private final Double MOI_Angle, MOI_Major_Radius, MOI_Minor_Radius, MOI_Total_Error_Score, MOI_Selectivity_Index, MOI_Confusion_Index;
     private final String MOI_Color_Discriminaton, MOI_Notes;
     private final boolean saturated;
     private final int trial_num;
     private final Eye eye;
 
-    public D15ExamResult(double MOI_Angle, double MOI_Major_Radius, double MOI_Minor_Radius, double MOI_Total_Error_Score, double MOI_Selectivity_Index, double MOI_Confusion_Index, String MOI_Color_Discriminaton, String MOI_Notes, boolean saturated, int trial_num, Eye eye) {
+    public D15ExamResult(Double MOI_Angle, Double MOI_Major_Radius, Double MOI_Minor_Radius, Double MOI_Total_Error_Score, Double MOI_Selectivity_Index, Double MOI_Confusion_Index, String MOI_Color_Discriminaton, String MOI_Notes, boolean saturated, int trial_num, Eye eye) {
         this.MOI_Angle = MOI_Angle;
         this.MOI_Major_Radius = MOI_Major_Radius;
         this.MOI_Minor_Radius = MOI_Minor_Radius;
@@ -45,27 +45,27 @@ public class D15ExamResult extends ExamResult {
         return trial_num;
     }
 
-    public double getMOI_Angle() {
+    public Double getMOI_Angle() {
         return MOI_Angle;
     }
 
-    public double getMOI_Major_Radius() {
+    public Double getMOI_Major_Radius() {
         return MOI_Major_Radius;
     }
 
-    public double getMOI_Minor_Radius() {
+    public Double getMOI_Minor_Radius() {
         return MOI_Minor_Radius;
     }
 
-    public double getMOI_Total_Error_Score() {
+    public Double getMOI_Total_Error_Score() {
         return MOI_Total_Error_Score;
     }
 
-    public double getMOI_Selectivity_Index() {
+    public Double getMOI_Selectivity_Index() {
         return MOI_Selectivity_Index;
     }
 
-    public double getMOI_Confusion_Index() {
+    public Double getMOI_Confusion_Index() {
         return MOI_Confusion_Index;
     }
 

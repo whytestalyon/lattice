@@ -525,10 +525,11 @@ public class ExcelParser {
         }
 
         //check for AOHRR exam
-        String[] data = new String[]{
-            row.getCell(ExamColumn.AOHRR_TYPE.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.AOHRR_DVALUE.getColIndex()).getStringCellValue().trim()
+        Cell[] cells = new Cell[]{
+            row.getCell(ExamColumn.AOHRR_TYPE.getColIndex()),
+            row.getCell(ExamColumn.AOHRR_DVALUE.getColIndex())
         };
+        String[] data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_AOHRR);
             exam.addResult(new AOHRRExamResult(data[0], data[1]));
@@ -540,7 +541,7 @@ public class ExcelParser {
             row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_COLOR_DISCRIMINATON.getColIndex()).getStringCellValue().trim(),
             row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_NOTES.getColIndex()).getStringCellValue().trim()
         };
-        Cell[] cells = new Cell[]{
+        cells = new Cell[]{
             row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_ANGLE.getColIndex()),
             row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_MAJOR_RADIUS.getColIndex()),
             row.getCell(ExamColumn.D15_SATURATED_OD_TRIAL_1_MOI_MINOR_RADIUS.getColIndex()),
@@ -552,12 +553,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     true,
@@ -584,12 +585,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     true,
@@ -616,12 +617,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     true,
@@ -648,12 +649,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     true,
@@ -680,12 +681,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     true,
@@ -712,12 +713,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     true,
@@ -744,12 +745,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     false,
@@ -776,12 +777,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     false,
@@ -808,12 +809,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     false,
@@ -840,12 +841,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     false,
@@ -872,12 +873,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     false,
@@ -904,12 +905,12 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_D15);
             exam.addResult(new D15ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     false,
@@ -930,13 +931,14 @@ public class ExcelParser {
         if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_RAYLEIGH);
             exam.addResult(new RayleighExamResult(
-                    (int) Math.round(cells[0].getNumericCellValue()),
-                    (int) Math.round(cells[1].getNumericCellValue()),
-                    (int) Math.round(cells[2].getNumericCellValue()),
-                    (int) Math.round(cells[3].getNumericCellValue()),
-                    (int) Math.round(cells[4].getNumericCellValue()),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[0].getNumericCellValue()) : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[1].getNumericCellValue()) : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC || cells[2].getCellType() == Cell.CELL_TYPE_FORMULA ? (int) Math.round(cells[2].getNumericCellValue()) : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[3].getNumericCellValue()) : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[4].getNumericCellValue()) : null,
                     Eye.OD
             ));
+
             enc.addExam(exam);
         }
 
@@ -951,11 +953,11 @@ public class ExcelParser {
         if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_RAYLEIGH);
             exam.addResult(new RayleighExamResult(
-                    (int) Math.round(cells[0].getNumericCellValue()),
-                    (int) Math.round(cells[1].getNumericCellValue()),
-                    (int) Math.round(cells[2].getNumericCellValue()),
-                    (int) Math.round(cells[3].getNumericCellValue()),
-                    (int) Math.round(cells[4].getNumericCellValue()),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[0].getNumericCellValue()) : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[1].getNumericCellValue()) : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC || cells[2].getCellType() == Cell.CELL_TYPE_FORMULA ? (int) Math.round(cells[2].getNumericCellValue()) : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[3].getNumericCellValue()) : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? (int) Math.round(cells[4].getNumericCellValue()) : null,
                     Eye.OS
             ));
             enc.addExam(exam);
@@ -979,13 +981,13 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_100HUE);
             exam.addResult(new Hue100ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
-                    cells[6].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
+                    cells[6].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[6].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     Eye.OD
@@ -1011,13 +1013,13 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_100HUE);
             exam.addResult(new Hue100ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
-                    cells[6].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
+                    cells[6].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[6].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     Eye.OS
@@ -1043,13 +1045,13 @@ public class ExcelParser {
                 || Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.COLOR_100HUE);
             exam.addResult(new Hue100ExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
-                    cells[6].getNumericCellValue(),
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
+                    cells[6].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[6].getNumericCellValue() : null,
                     data[0],
                     data[1],
                     Eye.BINOCULAR
@@ -1082,12 +1084,13 @@ public class ExcelParser {
         //check CAD Test exam
         //TBD, no definition in results table (yet)
         //check dilation exam
-        data = new String[]{
-            row.getCell(ExamColumn.DILATION_PHENYLPHRINE_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.DILATION_PHENYLPHRINE_OS.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.DILATION_TROPICAMIDE_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.DILATION_TROPICAMIDE_OS.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.DILATION_PHENYLPHRINE_OD.getColIndex()),
+            row.getCell(ExamColumn.DILATION_PHENYLPHRINE_OS.getColIndex()),
+            row.getCell(ExamColumn.DILATION_TROPICAMIDE_OD.getColIndex()),
+            row.getCell(ExamColumn.DILATION_TROPICAMIDE_OS.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.DILATION);
             exam.addResult(new DilationExamResult((!data[0].isEmpty() && !data[0].equals("-")) || (!data[1].isEmpty() && !data[1].equals("-")), (!data[2].isEmpty() && !data[2].equals("-")) || (!data[3].isEmpty() && !data[3].equals("-"))));
@@ -1097,17 +1100,18 @@ public class ExcelParser {
         //check PERIMETRY, Crosshair, disease, fixation, HVF all exam
         //TBD mapping from excel sheet to database table not clear
         //check for the best corrected visual accuity tests (BCVA)
-        data = new String[]{
-            row.getCell(ExamColumn.BCVA_ETDRS_OD_SPHERE.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OS_SPHERE.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OD_CYLINDER.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OS_CYLINDER.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OD_AXIS.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OS_AXIS.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OD_VA.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_OS_VA.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.BCVA_ETDRS_BINOCULAR_VA.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_SPHERE.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_SPHERE.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_CYLINDER.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_CYLINDER.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_AXIS.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_AXIS.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OD_VA.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_OS_VA.getColIndex()),
+            row.getCell(ExamColumn.BCVA_ETDRS_BINOCULAR_VA.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-") && !field.equals("No"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.VISUAL_ACUITY);
             exam.addResult(new VisualAccuityExamResult(
@@ -1139,22 +1143,23 @@ public class ExcelParser {
         if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.IOL_MASTER);
             exam.addResult(new IOLMasterExamResult(
-                    cells[0].getNumericCellValue(),
-                    cells[1].getNumericCellValue(),
-                    cells[2].getNumericCellValue(),
-                    cells[3].getNumericCellValue(),
-                    cells[4].getNumericCellValue(),
-                    cells[5].getNumericCellValue(),
-                    cells[6].getNumericCellValue(),
-                    cells[7].getNumericCellValue()
+                    cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null,
+                    cells[1].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[1].getNumericCellValue() : null,
+                    cells[2].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[2].getNumericCellValue() : null,
+                    cells[3].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[3].getNumericCellValue() : null,
+                    cells[4].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[4].getNumericCellValue() : null,
+                    cells[5].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[5].getNumericCellValue() : null,
+                    cells[6].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[6].getNumericCellValue() : null,
+                    cells[7].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[7].getNumericCellValue() : null
             ));
             enc.addExam(exam);
         }
 
         //check skin pigment exam
-        data = new String[]{
-            row.getCell(ExamColumn.SKIN_PIGMENT.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.SKIN_PIGMENT.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.SKIN_PIGMENT);
             exam.addResult(new SkinPigment(data[0]));
@@ -1190,19 +1195,20 @@ public class ExcelParser {
         };
         if (Arrays.stream(cells).anyMatch(field -> field.getCellType() == Cell.CELL_TYPE_NUMERIC)) {
             EncounterExamType exam = new EncounterExamType(ExamType.CONTRAST_SENSITIVITY);
-            exam.addResult(new ContrastSensitivityExamResult(cells[0].getNumericCellValue()));
+            exam.addResult(new ContrastSensitivityExamResult(cells[0].getCellType() == Cell.CELL_TYPE_NUMERIC ? cells[0].getNumericCellValue() : null));
             enc.addExam(exam);
         }
 
         //Autorefractor
-        data = new String[]{
-            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_SPHERE.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_CYLINDER.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_AXIS.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_SPHERE.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_CYLINDER.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_AXIS.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_SPHERE.getColIndex()),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_CYLINDER.getColIndex()),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OD_AXIS.getColIndex()),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_SPHERE.getColIndex()),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_CYLINDER.getColIndex()),
+            row.getCell(ExamColumn.AUTO_REFRACTOR_OS_AXIS.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.AUTOREFRACTION);
             exam.addResult(new AutoRefractorExamResult(
@@ -1253,12 +1259,13 @@ public class ExcelParser {
         }
 
         //OPTOS
-        data = new String[]{
-            row.getCell(ExamColumn.OPTOS_COLOR_OPTOS_COLOR_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OPTOS_COLOR_OPTOS_COLOR_OS.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OPTOS_AF_OPTOS_AF_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OPTOS_AF_OPTOS_AF_OS.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.OPTOS_COLOR_OPTOS_COLOR_OD.getColIndex()),
+            row.getCell(ExamColumn.OPTOS_COLOR_OPTOS_COLOR_OS.getColIndex()),
+            row.getCell(ExamColumn.OPTOS_AF_OPTOS_AF_OD.getColIndex()),
+            row.getCell(ExamColumn.OPTOS_AF_OPTOS_AF_OS.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.FUNDUS_OPTOS);
             exam.addResult(new OptosExamResult(
@@ -1317,10 +1324,11 @@ public class ExcelParser {
         }
 
         //OCT Cirrus undilated
-        data = new String[]{
-            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_UNDILATED_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_UNDILATED_OS.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_UNDILATED_OD.getColIndex()),
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_UNDILATED_OS.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.OCT_CIRRUS_UNDILATED);
             exam.addResult(new OCTCirrusUndilatedExamResult(
@@ -1331,10 +1339,11 @@ public class ExcelParser {
         }
 
         //OCT Cirrus dilated
-        data = new String[]{
-            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_DILATED_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_DILATED_OS.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_DILATED_OD.getColIndex()),
+            row.getCell(ExamColumn.OCT_CIRRUS_CIRRUS_DILATED_OS.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.OCT_CIRRUS_DILATED);
             exam.addResult(new OCTCirrusDilatedExamResult(
@@ -1345,12 +1354,13 @@ public class ExcelParser {
         }
 
         //OCT Bioptigen
-        data = new String[]{
-            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_CLINICAL_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_CLINICAL_OS.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_GLAUCOMA_OD.getColIndex()).getStringCellValue().trim(),
-            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_GLAUCOMA_OS.getColIndex()).getStringCellValue().trim()
+        cells = new Cell[]{
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_CLINICAL_OD.getColIndex()),
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_CLINICAL_OS.getColIndex()),
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_GLAUCOMA_OD.getColIndex()),
+            row.getCell(ExamColumn.OCT_BIOPTIGEN_BIOPTIGEN_GLAUCOMA_OS.getColIndex())
         };
+        data = getStringDataFromCells(cells);
         if (Arrays.stream(data).anyMatch(field -> !field.isEmpty() && !field.equals("-"))) {
             EncounterExamType exam = new EncounterExamType(ExamType.OCT_BIOPTIGEN);
             exam.addResult(new OCTBioptigenExamResult(
@@ -1525,4 +1535,23 @@ public class ExcelParser {
         }
     }
 
+    private String[] getStringDataFromCells(Cell[] cells) {
+        String[] data = new String[cells.length];
+        for (int i = 0; i < cells.length; i++) {
+            Cell cell = cells[i];
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_NUMERIC:
+                    data[i] = Double.toString(cell.getNumericCellValue());
+                    break;
+                case Cell.CELL_TYPE_STRING:
+                case Cell.CELL_TYPE_BLANK:
+                    data[i] = cell.getStringCellValue();
+                    break;
+                default:
+                    System.out.println("Uknonwn data type: " + cell.getCellType());
+                    System.exit(2);
+            }
+        }
+        return data;
+    }
 }

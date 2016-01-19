@@ -13,13 +13,13 @@ import com.bwc.lat.io.exc.Eye;
  */
 public class RayleighExamResult extends ExamResult {
 
-    private final int Range_Start, Range_End, Mid_Point, Yellow_1, Yellow_2;
+    private final Integer Range_Start, Range_End, Mid_PoInteger, Yellow_1, Yellow_2;
     private final Eye eye;
 
-    public RayleighExamResult(int Range_Start, int Range_End, int Mid_Point, int Yellow_1, int Yellow_2, Eye eye) {
+    public RayleighExamResult(Integer Range_Start, Integer Range_End, Integer Mid_PoInteger, Integer Yellow_1, Integer Yellow_2, Eye eye) {
         this.Range_Start = Range_Start;
         this.Range_End = Range_End;
-        this.Mid_Point = Mid_Point;
+        this.Mid_PoInteger = Mid_PoInteger;
         this.Yellow_1 = Yellow_1;
         this.Yellow_2 = Yellow_2;
         this.eye = eye;
@@ -29,23 +29,23 @@ public class RayleighExamResult extends ExamResult {
         return eye;
     }
 
-    public int getRange_Start() {
+    public Integer getRange_Start() {
         return Range_Start;
     }
 
-    public int getRange_End() {
+    public Integer getRange_End() {
         return Range_End;
     }
 
-    public int getMid_Point() {
-        return Mid_Point;
+    public Integer getMid_PoInteger() {
+        return Mid_PoInteger;
     }
 
-    public int getYellow_1() {
+    public Integer getYellow_1() {
         return Yellow_1;
     }
 
-    public int getYellow_2() {
+    public Integer getYellow_2() {
         return Yellow_2;
     }
 
