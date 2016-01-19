@@ -223,6 +223,9 @@ public class DiagnosisMap {
     }
 
     public Integer getDiagnosisCode(String dx) {
+        if (dx == null) {
+            return null;
+        }
         dx = dx.trim();
         if (dx.isEmpty()) {
             return null;

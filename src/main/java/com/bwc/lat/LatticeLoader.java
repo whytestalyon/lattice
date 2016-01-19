@@ -6,6 +6,7 @@
 package com.bwc.lat;
 
 import com.bwc.lat.io.ExcelParser;
+import com.bwc.lat.io.Storage;
 import com.bwc.lat.io.dom.Encounter;
 import com.bwc.lat.io.dom.Subject;
 import com.oracle.util.jdbc.JDBCUtilities;
@@ -13,7 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -30,6 +34,123 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
  */
 public class LatticeLoader {
 
+    private static final HashSet<String> testSubs = new HashSet<>(200);
+
+    static {
+
+        testSubs.add("TC_10219");
+        testSubs.add("WW_10223");
+        testSubs.add("KS_10238");
+        testSubs.add("TC_10240");
+        testSubs.add("KS_10241");
+        testSubs.add("KS_10242");
+        testSubs.add("DH_10244");
+        testSubs.add("SR_10265");
+        testSubs.add("SR_10282");
+        testSubs.add("DW_10288");
+        testSubs.add("JC_10435");
+        testSubs.add("DH_10468");
+        testSubs.add("RW_10315");
+        testSubs.add("JC_10313");
+        testSubs.add("JC_10334");
+        testSubs.add("JC_10496");
+        testSubs.add("JC_10492");
+        testSubs.add("JC_10424");
+        testSubs.add("DH_10342");
+        testSubs.add("DH_10330");
+        testSubs.add("JC_10316");
+        testSubs.add("JC_10422");
+        testSubs.add("CK_10452");
+        testSubs.add("KS_10337");
+        testSubs.add("JC_10335");
+        testSubs.add("CK_10420");
+        testSubs.add("DH_10323");
+        testSubs.add("JC_10345");
+        testSubs.add("SR_10343");
+        testSubs.add("DH_10464");
+        testSubs.add("JC_10461");
+        testSubs.add("JG_10434");
+        testSubs.add("JC_10469");
+        testSubs.add("JG_10459");
+        testSubs.add("SS_10457");
+        testSubs.add("CK_10419");
+        testSubs.add("JC_10339");
+        testSubs.add("JC_10409");
+        testSubs.add("JC_10451");
+        testSubs.add("CK_10433");
+        testSubs.add("JC_10410");
+        testSubs.add("JK_10347");
+        testSubs.add("JG_10460");
+        testSubs.add("JC_10421");
+        testSubs.add("JC_10453");
+        testSubs.add("SR_10341");
+        testSubs.add("TH_10415");
+        testSubs.add("JC_10494");
+        testSubs.add("JC_10338");
+        testSubs.add("JC_10491");
+        testSubs.add("JG_10324");
+        testSubs.add("JC_10490");
+        testSubs.add("AD_10407");
+        testSubs.add("JC_10311");
+        testSubs.add("SS_10458");
+        testSubs.add("JB_10462");
+        testSubs.add("JC_10310");
+        testSubs.add("JC_10319");
+        testSubs.add("JC_10487");
+        testSubs.add("JC_10327");
+        testSubs.add("KS_10306");
+        testSubs.add("KS_10336");
+        testSubs.add("DH_10466");
+        testSubs.add("JC_10416");
+        testSubs.add("KS_10321");
+        testSubs.add("DW_10290");
+        testSubs.add("JC_10344");
+        testSubs.add("JC_10326");
+        testSubs.add("JG_10322");
+        testSubs.add("JC_10325");
+        testSubs.add("JC_10488");
+        testSubs.add("KS_10307");
+        testSubs.add("JC_10317");
+        testSubs.add("JC_10418");
+        testSubs.add("GF_10408");
+        testSubs.add("AD_10348");
+        testSubs.add("DH_10463");
+        testSubs.add("JC_10417");
+        testSubs.add("JC_10414");
+        testSubs.add("JC_10340");
+        testSubs.add("DH_10346");
+        testSubs.add("TC_10454");
+        testSubs.add("DH_10465");
+        testSubs.add("JG_10333");
+        testSubs.add("DH_10467");
+        testSubs.add("KS_10292");
+        testSubs.add("TC_10489");
+        testSubs.add("JG_10432");
+        testSubs.add("JG_10413");
+        testSubs.add("KS_10412");
+        testSubs.add("JG_10423");
+        testSubs.add("KS_10314");
+        testSubs.add("JC_10436");
+        testSubs.add("JC_10328");
+        testSubs.add("JC_10318");
+        testSubs.add("SS_10456");
+        testSubs.add("CK_10493");
+        testSubs.add("JC_10411");
+        testSubs.add("JC_10320");
+        testSubs.add("RW_10495");
+        testSubs.add("DH_10484");
+        testSubs.add("WW_10485");
+        testSubs.add("SS_10455");
+        testSubs.add("JC_10329");
+        testSubs.add("JC_10312");
+        testSubs.add("GF_10406");
+        testSubs.add("JC_10726");
+        testSubs.add("JC_10746");
+        testSubs.add("JC_10797");
+        testSubs.add("JC_10845");
+
+    }
+
     private static JDBCUtilities dbUtils;
     private static File connectionProps = null;
     private static File inputExcelFile = null;
@@ -44,13 +165,14 @@ public class LatticeLoader {
 
         //connect to the database using the connection informatyion
         //specified in the properties file
-//        dbUtils = new JDBCUtilities(connectionProps.getAbsolutePath());
-//        Class.forName(dbUtils.getDriver());
-//        databaseConnection = dbUtils.getConnection();
-//        System.out.println("Connected to Lattice database!");
-//        
+        dbUtils = new JDBCUtilities(connectionProps.getAbsolutePath());
+        Class.forName(dbUtils.getDriver());
+        databaseConnection = dbUtils.getConnection();
+        System.out.println("Connected to Lattice database!");
+        
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
+        System.out.println("Parsing subjects...");
         List<Subject> subjects = ep.getSubjects();
 //        int sid = subjects.stream().filter(s -> s.getAoip_id().equals("JC_0002")).findFirst().get().getSubject_id();
 //        System.out.println("ID: " + sid);
@@ -58,12 +180,22 @@ public class LatticeLoader {
 //                .filter(s -> s.getAoip_id().equals("JC_0002"))
 //                .forEach(System.out::println);
 //
+        System.out.println("Parsing encounters");
         List<Encounter> encounters = ep.getEncounters(subjects);
-        encounters.stream()
-//                .filter(e -> e.getSubject_id() == sid)
-                .filter(e -> !e.getExams().isEmpty())
-                .limit(10)
-                .forEach(System.out::println);
+//        encounters.stream()
+//                //                .filter(e -> e.getSubject_id() == sid)
+//                .filter(e -> !e.getExams().isEmpty())
+//                .limit(10)
+//                .forEach(System.out::println);
+        
+        System.out.println("Adding subjects...");
+        Storage.insertSubjects(databaseConnection, subjects.stream().filter(s -> testSubs.contains(s.getAoip_id())).collect(Collectors.toList()));
+        Set<Integer> testSubIds = subjects.stream().filter(s -> testSubs.contains(s.getAoip_id())).map(Subject::getSubject_id).collect(Collectors.toSet());
+        
+        System.out.println("Adding encounters...");
+        Storage.insertEncounters(databaseConnection, encounters.stream().filter(e -> testSubIds.contains(e.getSubject_id())).collect(Collectors.toList()));
+    
+        databaseConnection.close();
     }
 
     /**

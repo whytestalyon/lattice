@@ -13,8 +13,8 @@ public class OCTCirrusUndilatedExamResult extends ExamResult{
     private String od, os;
 
     public OCTCirrusUndilatedExamResult(String od, String os) {
-        this.od = od;
-        this.os = os;
+        this.od = od.equals("-") ? null : od;
+        this.os = os.equals("-") ? null : os;
     }
 
     public String getOd() {

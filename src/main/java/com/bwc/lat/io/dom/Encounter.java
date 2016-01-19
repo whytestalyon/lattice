@@ -6,7 +6,6 @@
 package com.bwc.lat.io.dom;
 
 import com.bwc.lat.io.dom.exam.EncounterExamType;
-import com.bwc.lat.io.dom.res.ExamResult;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;

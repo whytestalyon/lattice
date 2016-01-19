@@ -223,6 +223,22 @@ public class Subject {
     public String getPermission_recontact() {
         return permission_recontact;
     }
+    
+    public Integer getPermission_recontactInt() {
+        if (permission_recontact == null) {
+            return null;
+        }
+        switch (permission_recontact) {
+            case "Yes":
+            case "yes":
+                return 1;
+            case "No":
+            case "no":
+                return 0;
+            default:
+                return null;
+        }
+    }
 
     public void setPermission_recontact(String permission_recontact) {
         this.permission_recontact = permission_recontact.trim().isEmpty() ? null : permission_recontact;
@@ -282,6 +298,54 @@ public class Subject {
 
     public void setDx_other(String dx_other) {
         this.dx_other = dx_other.trim().isEmpty() ? null : dx_other;
+    }
+    
+    public Integer getDilate_safeInt() {
+        if (dilate_safe == null) {
+            return null;
+        }
+        switch (dilate_safe) {
+            case "Yes":
+            case "yes":
+                return 1;
+            case "No":
+            case "no":
+                return 0;
+            default:
+                return null;
+        }
+    }
+
+    public Integer getNystagmusInt() {
+        if (nystagmus == null) {
+            return null;
+        }
+        switch (nystagmus) {
+            case "Yes":
+            case "yes":
+                return 1;
+            case "No":
+            case "no":
+                return 0;
+            default:
+                return null;
+        }
+    }
+
+    public Integer getUnstable_fixationInt() {
+        if (unstable_fixation == null) {
+            return null;
+        }
+        switch (unstable_fixation) {
+            case "Yes":
+            case "yes":
+                return 1;
+            case "No":
+            case "no":
+                return 0;
+            default:
+                return null;
+        }
     }
 
     public String getDilate_safe() {

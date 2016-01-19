@@ -17,8 +17,8 @@ public class IshiharaExamResult extends ExamResult{
 
     public IshiharaExamResult(int edition, String correctAnswers, String type) {
         this.edition = edition;
-        this.correctAnswers = correctAnswers;
-        this.type = type;
+        this.correctAnswers = correctAnswers.equals("-") ? null : correctAnswers;
+        this.type = type.equals("-") ? null : type;
     }
 
     public String getType() {
