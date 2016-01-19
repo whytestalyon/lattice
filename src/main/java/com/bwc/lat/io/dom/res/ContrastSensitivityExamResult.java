@@ -21,4 +21,9 @@ public class ContrastSensitivityExamResult extends ExamResult {
         return contrast;
     }
 
+    @Override
+    public String toString() {
+        return "ContrastSensitivityExamResult{" + "contrast=" + contrast + '}';
+    }
+
 }

@@ -15,11 +15,16 @@ public class NeitzExamResult extends ExamResult {
 
     public NeitzExamResult(String result) {
         super();
-        this.result = result;
+        this.result = result.equals("-") ? null : result;
     }
 
     public String getResult() {
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "NeitzExamResult{" + "result=" + result + '}';
     }
 
 }

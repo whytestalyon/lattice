@@ -14,10 +14,10 @@ public class OptosExamResult extends ExamResult {
     private String color_od, color_os, af_od, af_os;
 
     public OptosExamResult(String color_od, String color_os, String af_od, String af_os) {
-        this.color_od = color_od;
-        this.color_os = color_os;
-        this.af_od = af_od;
-        this.af_os = af_os;
+        this.color_od = color_od.equals("-") ? null : color_od;
+        this.color_os = color_os.equals("-") ? null : color_os;
+        this.af_od = af_od.equals("-") ? null : af_od;
+        this.af_os = af_os.equals("-") ? null : af_os;
     }
 
     public String getColor_od() {
@@ -34,6 +34,11 @@ public class OptosExamResult extends ExamResult {
 
     public String getAf_os() {
         return af_os;
+    }
+
+    @Override
+    public String toString() {
+        return "OptosExamResult{" + "color_od=" + color_od + ", color_os=" + color_os + ", af_od=" + af_od + ", af_os=" + af_os + '}';
     }
 
 }

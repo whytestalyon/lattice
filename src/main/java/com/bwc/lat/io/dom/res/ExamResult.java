@@ -44,4 +44,9 @@ public abstract class ExamResult {
         return created_date;
     }
 
+    @Override
+    public String toString() {
+        return "ExamResult{" + "exam_result_id=" + exam_result_id + ", created_by=" + created_by + ", created_date=" + created_date + ", isFileResult=" + isFileResult + '}';
+    }
+
 }

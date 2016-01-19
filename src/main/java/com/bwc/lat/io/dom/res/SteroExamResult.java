@@ -9,16 +9,21 @@ package com.bwc.lat.io.dom.res;
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class SteroExamResult extends ExamResult{
+public class SteroExamResult extends ExamResult {
+
     private String stereo;
 
     public SteroExamResult(String stereo) {
-        this.stereo = stereo;
+        this.stereo = stereo.equals("-") ? null : stereo;
     }
 
     public String getStereo() {
         return stereo;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "SteroExamResult{" + "stereo=" + stereo + '}';
+    }
+
 }

@@ -26,8 +26,8 @@ public class D15ExamResult extends ExamResult {
         this.MOI_Total_Error_Score = MOI_Total_Error_Score;
         this.MOI_Selectivity_Index = MOI_Selectivity_Index;
         this.MOI_Confusion_Index = MOI_Confusion_Index;
-        this.MOI_Color_Discriminaton = MOI_Color_Discriminaton;
-        this.MOI_Notes = MOI_Notes;
+        this.MOI_Color_Discriminaton = MOI_Color_Discriminaton.equals("-") ? null : MOI_Color_Discriminaton;
+        this.MOI_Notes = MOI_Notes.equals("-") ? null : MOI_Notes;
         this.saturated = saturated;
         this.trial_num = trial_num;
         this.eye = eye;
@@ -75,6 +75,11 @@ public class D15ExamResult extends ExamResult {
 
     public String getMOI_Notes() {
         return MOI_Notes;
+    }
+
+    @Override
+    public String toString() {
+        return "D15ExamResult{" + "MOI_Angle=" + MOI_Angle + ", MOI_Major_Radius=" + MOI_Major_Radius + ", MOI_Minor_Radius=" + MOI_Minor_Radius + ", MOI_Total_Error_Score=" + MOI_Total_Error_Score + ", MOI_Selectivity_Index=" + MOI_Selectivity_Index + ", MOI_Confusion_Index=" + MOI_Confusion_Index + ", MOI_Color_Discriminaton=" + MOI_Color_Discriminaton + ", MOI_Notes=" + MOI_Notes + ", saturated=" + saturated + ", trial_num=" + trial_num + ", eye=" + eye + '}';
     }
 
 }

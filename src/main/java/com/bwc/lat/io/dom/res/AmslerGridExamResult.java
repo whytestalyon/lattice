@@ -10,11 +10,12 @@ package com.bwc.lat.io.dom.res;
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
 public class AmslerGridExamResult extends ExamResult {
+
     private String od_res, os_res;
 
     public AmslerGridExamResult(String od_res, String os_res) {
-        this.od_res = od_res;
-        this.os_res = os_res;
+        this.od_res = od_res.equals("-") ? null : od_res;
+        this.os_res = os_res.equals("-") ? null : os_res;
     }
 
     public String getOd_res() {
@@ -24,5 +25,10 @@ public class AmslerGridExamResult extends ExamResult {
     public String getOs_res() {
         return os_res;
     }
-    
+
+    @Override
+    public String toString() {
+        return "AmslerGridExamResult{" + "od_res=" + od_res + ", os_res=" + os_res + '}';
+    }
+
 }

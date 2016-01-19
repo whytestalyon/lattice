@@ -14,12 +14,12 @@ public class AutoRefractorExamResult extends ExamResult {
     private String sphere_od, cyl_od, axis_od, sphere_os, cyl_os, axis_os;
 
     public AutoRefractorExamResult(String sphere_od, String cyl_od, String axis_od, String sphere_os, String cyl_os, String axis_os) {
-        this.sphere_od = sphere_od;
-        this.cyl_od = cyl_od;
-        this.axis_od = axis_od;
-        this.sphere_os = sphere_os;
-        this.cyl_os = cyl_os;
-        this.axis_os = axis_os;
+        this.sphere_od = sphere_od.equals("-") ? null : sphere_od;
+        this.cyl_od = cyl_od.equals("-") ? null : cyl_od;
+        this.axis_od = axis_od.equals("-") ? null : axis_od;
+        this.sphere_os = sphere_os.equals("-") ? null : sphere_os;
+        this.cyl_os = cyl_os.equals("-") ? null : cyl_os;
+        this.axis_os = axis_os.equals("-") ? null : axis_os;
     }
 
     public String getSphere_od() {
@@ -44,6 +44,11 @@ public class AutoRefractorExamResult extends ExamResult {
 
     public String getAxis_os() {
         return axis_os;
+    }
+
+    @Override
+    public String toString() {
+        return "AutoRefractorExamResult{" + "sphere_od=" + sphere_od + ", cyl_od=" + cyl_od + ", axis_od=" + axis_od + ", sphere_os=" + sphere_os + ", cyl_os=" + cyl_os + ", axis_os=" + axis_os + '}';
     }
 
 }

@@ -14,8 +14,8 @@ public class MDVisitExamResult extends ExamResult {
     private String undilated, dilated;
 
     public MDVisitExamResult(String undilated, String dilated) {
-        this.undilated = undilated;
-        this.dilated = dilated;
+        this.undilated = undilated.equals("-") ? null : undilated;
+        this.dilated = dilated.equals("-") ? null : dilated;
     }
 
     public String getUndilated() {
@@ -24,6 +24,11 @@ public class MDVisitExamResult extends ExamResult {
 
     public String getDilated() {
         return dilated;
+    }
+
+    @Override
+    public String toString() {
+        return "MDVisitExamResult{" + "undilated=" + undilated + ", dilated=" + dilated + '}';
     }
 
 }

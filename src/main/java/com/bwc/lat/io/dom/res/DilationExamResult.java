@@ -26,4 +26,9 @@ public class DilationExamResult extends ExamResult{
         return trop;
     }
 
+    @Override
+    public String toString() {
+        return "DilationExamResult{" + "pheno=" + pheno + ", trop=" + trop + '}';
+    }
+
 }

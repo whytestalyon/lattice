@@ -56,4 +56,9 @@ public class IOLMasterExamResult extends ExamResult {
         return acd_os;
     }
 
+    @Override
+    public String toString() {
+        return "IOLMasterExamResult{" + "k1_od=" + k1_od + ", k2_od=" + k2_od + ", k1_os=" + k1_os + ", k2_os=" + k2_os + ", axial_od=" + axial_od + ", axial_os=" + axial_os + ", acd_od=" + acd_od + ", acd_os=" + acd_os + '}';
+    }
+
 }

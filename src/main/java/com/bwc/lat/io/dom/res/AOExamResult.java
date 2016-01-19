@@ -9,14 +9,15 @@ package com.bwc.lat.io.dom.res;
  *
  * @author Brandon M. Wilk {@literal <}wilkb777@gmail.com{@literal >}
  */
-public class AOExamResult extends ExamResult{
+public class AOExamResult extends ExamResult {
+
     private String od, od_fixation, os, os_fixation;
 
     public AOExamResult(String od, String od_fixation, String os, String os_fixation) {
-        this.od = od;
-        this.od_fixation = od_fixation;
-        this.os = os;
-        this.os_fixation = os_fixation;
+        this.od = od.equals("-") ? null : od;
+        this.od_fixation = od_fixation.equals("-") ? null : od_fixation;
+        this.os = os.equals("-") ? null : os;
+        this.os_fixation = os_fixation.equals("-") ? null : os_fixation;
     }
 
     public String getOd() {
@@ -33,6 +34,11 @@ public class AOExamResult extends ExamResult{
 
     public String getOs_fixation() {
         return os_fixation;
+    }
+
+    @Override
+    public String toString() {
+        return "AOExamResult{" + "od=" + od + ", od_fixation=" + od_fixation + ", os=" + os + ", os_fixation=" + os_fixation + '}';
     }
 
 }

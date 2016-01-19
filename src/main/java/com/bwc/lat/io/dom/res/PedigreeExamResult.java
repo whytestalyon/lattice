@@ -13,11 +13,16 @@ public class PedigreeExamResult extends ExamResult{
     private String pedigree;
 
     public PedigreeExamResult(String pedigree) {
-        this.pedigree = pedigree;
+        this.pedigree = pedigree.equals("-")? null: pedigree;
     }
 
     public String getPedigree() {
         return pedigree;
+    }
+
+    @Override
+    public String toString() {
+        return "PedigreeExamResult{" + "pedigree=" + pedigree + '}';
     }
     
     

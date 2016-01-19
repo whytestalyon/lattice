@@ -45,4 +45,9 @@ public class IshiharaExamResult extends ExamResult{
         this.correctAnswers = correctAnswers;
     }
 
+    @Override
+    public String toString() {
+        return "IshiharaExamResult{" + "edition=" + edition + ", correctAnswers=" + correctAnswers + ", type=" + type + '}';
+    }
+
 }

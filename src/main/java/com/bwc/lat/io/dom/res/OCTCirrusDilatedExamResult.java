@@ -24,4 +24,10 @@ public class OCTCirrusDilatedExamResult extends ExamResult{
     public String getOs() {
         return os;
     }
+
+    @Override
+    public String toString() {
+        return "OCTCirrusDilatedExamResult{" + "od=" + od + ", os=" + os + '}';
+    }
+    
 }

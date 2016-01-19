@@ -14,7 +14,7 @@ import com.bwc.lat.io.exc.Eye;
 public class Hue100ExamResult extends ExamResult {
 
     private final Double MOI_Angle, MOI_Major_Radius, MOI_Minor_Radius, MOI_Total_Error_Score, MOI_Selectivity_Index, MOI_Confusion_Index, hue100_classical_error_score;
-    private final String hue100_classical_notes, MOI_Notes ;
+    private final String hue100_classical_notes, MOI_Notes;
     private final Eye eye;
 
     public Hue100ExamResult(Double MOI_Angle, Double MOI_Major_Radius, Double MOI_Minor_Radius, Double MOI_Total_Error_Score, Double MOI_Selectivity_Index, Double MOI_Confusion_Index, Double hue100_classical_error_score, String hue100_classical_notes, String MOI_Notes, Eye eye) {
@@ -25,8 +25,8 @@ public class Hue100ExamResult extends ExamResult {
         this.MOI_Selectivity_Index = MOI_Selectivity_Index;
         this.MOI_Confusion_Index = MOI_Confusion_Index;
         this.hue100_classical_error_score = hue100_classical_error_score;
-        this.hue100_classical_notes = hue100_classical_notes;
-        this.MOI_Notes = MOI_Notes;
+        this.hue100_classical_notes = hue100_classical_notes.equals("-") ? null : hue100_classical_notes;
+        this.MOI_Notes = MOI_Notes.equals("-") ? null : MOI_Notes;
         this.eye = eye;
     }
 
@@ -68,6 +68,11 @@ public class Hue100ExamResult extends ExamResult {
 
     public String getMOI_Notes() {
         return MOI_Notes;
+    }
+
+    @Override
+    public String toString() {
+        return "Hue100ExamResult{" + "MOI_Angle=" + MOI_Angle + ", MOI_Major_Radius=" + MOI_Major_Radius + ", MOI_Minor_Radius=" + MOI_Minor_Radius + ", MOI_Total_Error_Score=" + MOI_Total_Error_Score + ", MOI_Selectivity_Index=" + MOI_Selectivity_Index + ", MOI_Confusion_Index=" + MOI_Confusion_Index + ", hue100_classical_error_score=" + hue100_classical_error_score + ", hue100_classical_notes=" + hue100_classical_notes + ", MOI_Notes=" + MOI_Notes + ", eye=" + eye + '}';
     }
 
 }

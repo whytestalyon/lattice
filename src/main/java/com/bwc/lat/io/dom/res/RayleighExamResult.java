@@ -49,4 +49,9 @@ public class RayleighExamResult extends ExamResult {
         return Yellow_2;
     }
 
+    @Override
+    public String toString() {
+        return "RayleighExamResult{" + "Range_Start=" + Range_Start + ", Range_End=" + Range_End + ", Mid_PoInteger=" + Mid_PoInteger + ", Yellow_1=" + Yellow_1 + ", Yellow_2=" + Yellow_2 + ", eye=" + eye + '}';
+    }
+
 }

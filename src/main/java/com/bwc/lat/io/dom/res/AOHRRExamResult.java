@@ -14,8 +14,8 @@ public class AOHRRExamResult extends ExamResult {
     private final String type, dvalue;
 
     public AOHRRExamResult(String type, String dvalue) {
-        this.type = type;
-        this.dvalue = dvalue;
+        this.type = type.equals("-")?null: type;
+        this.dvalue = dvalue.equals("-")?null: dvalue;
     }
 
     public String getType() {
@@ -24,6 +24,11 @@ public class AOHRRExamResult extends ExamResult {
 
     public String getDvalue() {
         return dvalue;
+    }
+
+    @Override
+    public String toString() {
+        return "AOHRRExamResult{" + "type=" + type + ", dvalue=" + dvalue + '}';
     }
 
 }

@@ -13,8 +13,8 @@ public class SpectrailsExamResult extends ExamResult{
     private String od, os;
 
     public SpectrailsExamResult(String od, String os) {
-        this.od = od;
-        this.os = os;
+        this.od = od.equals("-")?null:od;
+        this.os = os.equals("-")?null:od;
     }
 
     public String getOd() {
@@ -23,6 +23,11 @@ public class SpectrailsExamResult extends ExamResult{
 
     public String getOs() {
         return os;
+    }
+
+    @Override
+    public String toString() {
+        return "SpectrailsExamResult{" + "od=" + od + ", os=" + os + '}';
     }
     
 }

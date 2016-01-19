@@ -13,8 +13,8 @@ public class OCTOptovueExamResult extends ExamResult {
     private String od, os;
 
     public OCTOptovueExamResult(String od, String os) {
-        this.od = od;
-        this.os = os;
+        this.od = od.equals("-") ? null : od;
+        this.os = os.equals("-") ? null : os;
     }
 
     public String getOd() {
@@ -23,6 +23,11 @@ public class OCTOptovueExamResult extends ExamResult {
 
     public String getOs() {
         return os;
+    }
+
+    @Override
+    public String toString() {
+        return "OCTOptovueExamResult{" + "od=" + od + ", os=" + os + '}';
     }
     
     
