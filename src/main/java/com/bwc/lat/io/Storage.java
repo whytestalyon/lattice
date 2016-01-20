@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
@@ -140,7 +141,7 @@ public class Storage {
             + "?,\n"
             + "?,\n"
             + "?,\n"
-            + "?,\n"
+            + "?\n"
             + "  )";
 
     public static int insertSubjects(Connection db, List<Subject> subjects) throws SQLException {
@@ -166,21 +167,53 @@ public class Storage {
                 stat.setString(17, subject.getPhone_personal());
                 stat.setString(18, subject.getPhone_work());
                 stat.setString(19, null);
-                stat.setInt(20, subject.getReferral_type_id().getID());
+                if (subject.getReferral_type_id() == null) {
+                    stat.setNull(20, Types.INTEGER);
+                } else {
+                    stat.setInt(20, subject.getReferral_type_id().getID());
+                }
                 stat.setString(21, subject.getCreated_by());
                 stat.setDate(22, new Date(subject.getCreated_date().getTime()));
                 stat.setString(23, null);
                 stat.setDate(24, null);
                 stat.setString(25, subject.getEye_color());
-                stat.setDate(26, new Date(subject.getDob().getTime()));
-                stat.setInt(27, subject.getNystagmusInt());
-                stat.setInt(28, subject.getUnstable_fixationInt());
-                stat.setInt(29, subject.getDilate_safeInt());
-                stat.setString(30, subject.getMi());
-                stat.setInt(31, dm.getDiagnosisCode(subject.getDx_pri()));
-                stat.setInt(32, dm.getDiagnosisCode(subject.getDx_sec()));
-                stat.setInt(33, dm.getDiagnosisCode(subject.getDx_other()));
-                stat.setInt(34, subject.getPermission_recontactInt());
+                stat.setDate(26, subject.getDob() == null ? null : new Date(subject.getDob().getTime()));
+                if (subject.getNystagmusInt() == null) {
+                    stat.setNull(27, Types.INTEGER);
+                } else {
+                    stat.setInt(27, subject.getNystagmusInt());
+                }
+                if (subject.getUnstable_fixationInt() == null) {
+                    stat.setNull(28, Types.INTEGER);
+                } else {
+                    stat.setInt(28, subject.getUnstable_fixationInt());
+                }
+                if (subject.getDilate_safeInt() == null) {
+                    stat.setNull(29, Types.INTEGER);
+                } else {
+                    stat.setInt(29, subject.getDilate_safeInt());
+                }
+                stat.setString(30, subject.getMi() == null || subject.getMi().isEmpty() ? null : subject.getMi().substring(0, 1));
+                if (dm.getDiagnosisCode(subject.getDx_pri()) == null) {
+                    stat.setNull(31, Types.INTEGER);
+                } else {
+                    stat.setInt(31, dm.getDiagnosisCode(subject.getDx_pri()));
+                }
+                if (dm.getDiagnosisCode(subject.getDx_sec()) == null) {
+                    stat.setNull(32, Types.INTEGER);
+                } else {
+                    stat.setInt(32, dm.getDiagnosisCode(subject.getDx_sec()));
+                }
+                if (dm.getDiagnosisCode(subject.getDx_other()) == null) {
+                    stat.setNull(33, Types.INTEGER);
+                } else {
+                    stat.setInt(33, dm.getDiagnosisCode(subject.getDx_other()));
+                }
+                if (subject.getPermission_recontactInt() == null) {
+                    stat.setNull(34, Types.TINYINT);
+                } else {
+                    stat.setInt(34, subject.getPermission_recontactInt());
+                }
                 insertCnt += stat.executeUpdate();
             }
         }
@@ -196,21 +229,59 @@ public class Storage {
                 stat.setInt(3, enc.getEncounter_type_id());
                 stat.setInt(4, enc.getEncounter_status_id());
                 stat.setNull(5, Types.INTEGER);
-                stat.setInt(6, enc.getRef_pro_id());
-                stat.setDate(7, new Date(enc.getEncounter_start_date().getTime()));
-                stat.setDate(8, new Date(enc.getEncounter_end_date().getTime()));
+                if (enc.getRef_pro_id() == null) {
+                    stat.setNull(6, Types.INTEGER);
+                } else {
+                    stat.setInt(6, enc.getRef_pro_id());
+                }
+                stat.setDate(7, enc.getEncounter_start_date() == null ? null : new Date(enc.getEncounter_start_date().getTime()));
+                stat.setDate(8, enc.getEncounter_end_date() == null ? null : new Date(enc.getEncounter_end_date().getTime()));
                 stat.setString(9, enc.getNotes());
-                stat.setInt(10, enc.getStipend_given());
+                if (enc.getStipend_given() == null) {
+                    stat.setNull(10, Types.TINYINT);
+                } else {
+                    stat.setInt(10, enc.getStipend_given());
+                }
                 stat.setString(11, enc.getCreated_by());
                 stat.setDate(12, new Date(enc.getCreated_date().getTime()));
-                stat.setInt(13, enc.getItinerary_needed());
-                stat.setInt(14, enc.getConsent_needed());
-                stat.setInt(15, enc.getAddendum_needed());
-                stat.setInt(16, enc.getFemale_child_bearing_age());
-                stat.setInt(17, enc.getPregnant_or_nursing());
+                if (enc.getItinerary_needed() == null) {
+                    stat.setNull(13, Types.TINYINT);
+                } else {
+                    stat.setInt(13, enc.getItinerary_needed());
+                }
+                if (enc.getConsent_needed() == null) {
+                    stat.setNull(14, Types.TINYINT);
+                } else {
+                    stat.setInt(14, enc.getConsent_needed());
+                }
+                if (enc.getAddendum_needed() == null) {
+                    stat.setNull(15, Types.TINYINT);
+                } else {
+                    stat.setInt(15, enc.getAddendum_needed());
+                }
+                if (enc.getFemale_child_bearing_age() == null) {
+                    stat.setNull(16, Types.TINYINT);
+                } else {
+                    stat.setInt(16, enc.getFemale_child_bearing_age());
+                }
+                if (enc.getPregnant_or_nursing() == null) {
+                    stat.setNull(17, Types.TINYINT);
+                } else {
+                    stat.setInt(17, enc.getPregnant_or_nursing());
+                }
                 insertCnt += stat.executeUpdate();
             }
         }
         return insertCnt;
+    }
+
+    public static void clearPrevLoadedData(Connection db) throws SQLException {
+        Statement stat = db.createStatement();
+        stat.execute("delete from EXAM_RESULT where CREATED_BY = 'BWILK'");
+        stat.execute("delete from ENCOUNTER_EXAM_TYPE where CREATED_BY = 'BWILK'");
+        stat.execute("delete from ENCOUNTER where CREATED_BY = 'BWILK'");
+        stat.execute("delete from SUBJECT where CREATED_BY = 'BWILK'");
+        stat.execute("delete from DIAGNOSIS where CREATED_BY = 'BWILK'");
+        stat.execute("delete from PROVIDER where CREATED_BY = 'BWILK'");
     }
 }

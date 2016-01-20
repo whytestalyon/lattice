@@ -5,7 +5,15 @@
  */
 package com.bwc.lat.io.dom;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,6 +23,7 @@ public class DiagnosisMap {
 
     private static final DiagnosisMap INSTANCE = new DiagnosisMap();
     private HashMap<String, Integer> codeMap = new HashMap<>(300);
+    private Connection db;
 
     private DiagnosisMap() {
         codeMap.put("Albinism", 2);
@@ -222,6 +231,10 @@ public class DiagnosisMap {
         return INSTANCE;
     }
 
+    public void setConnection(Connection db) {
+        this.db = db;
+    }
+
     public Integer getDiagnosisCode(String dx) {
         if (dx == null) {
             return null;
@@ -229,10 +242,37 @@ public class DiagnosisMap {
         dx = dx.trim();
         if (dx.isEmpty()) {
             return null;
-        } else if (!codeMap.containsKey(dx)) {
-            throw new IllegalArgumentException("Unknown diagnosis: " + dx);
-        } else {
-            return codeMap.get(dx);
+        }
+        if (!codeMap.containsKey(dx)) {
+            try {
+                int nextId;
+                try (Statement stat = db.createStatement()) {
+                    ResultSet rs = stat.executeQuery("select max(DX_ID) from DIAGNOSIS");
+                    rs.first();
+                    nextId = rs.getInt(1) + 1;
+                }
+
+                try (PreparedStatement istat = db.prepareStatement("insert into DIAGNOSIS (DX_ID, SDESC, CREATED_BY, CREATED_DATE) values (?,?,?,?)")) {
+                    istat.setInt(1, nextId);
+                    istat.setString(2, dx);
+                    istat.setString(3, "BWILK");
+                    istat.setDate(4, new Date(new java.util.Date().getTime()));
+                    if (istat.executeUpdate() != 1) {
+                        throw new SQLException("Code addition failed.");
+                    }
+                    codeMap.put(dx, nextId);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DiagnosisMap.class.getName()).log(Level.SEVERE, "Failed to add new diagnosis to database: " + dx, ex);
+                System.exit(2);
+            }
+        }
+        return codeMap.get(dx);
+    }
+
+    public void closeConnection2Db() throws SQLException {
+        if (db != null) {
+            db.close();
         }
     }
 }

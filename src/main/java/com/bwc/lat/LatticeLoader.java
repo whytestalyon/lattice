@@ -7,7 +7,9 @@ package com.bwc.lat;
 
 import com.bwc.lat.io.ExcelParser;
 import com.bwc.lat.io.Storage;
+import com.bwc.lat.io.dom.DiagnosisMap;
 import com.bwc.lat.io.dom.Encounter;
+import com.bwc.lat.io.dom.ProviderMap;
 import com.bwc.lat.io.dom.Subject;
 import com.oracle.util.jdbc.JDBCUtilities;
 import java.io.File;
@@ -168,8 +170,15 @@ public class LatticeLoader {
         dbUtils = new JDBCUtilities(connectionProps.getAbsolutePath());
         Class.forName(dbUtils.getDriver());
         databaseConnection = dbUtils.getConnection();
+        DiagnosisMap.getInstance().setConnection(dbUtils.getConnection());
         System.out.println("Connected to Lattice database!");
+
+        System.out.println("Clearing old loaded data...");
+        Storage.clearPrevLoadedData(databaseConnection);
         
+        System.out.println("Adding new providers...");
+        ProviderMap.getInstance().addProvidersToDb(databaseConnection);
+
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
         System.out.println("Parsing subjects...");
@@ -187,15 +196,18 @@ public class LatticeLoader {
 //                .filter(e -> !e.getExams().isEmpty())
 //                .limit(10)
 //                .forEach(System.out::println);
-        
+
         System.out.println("Adding subjects...");
-        Storage.insertSubjects(databaseConnection, subjects.stream().filter(s -> testSubs.contains(s.getAoip_id())).collect(Collectors.toList()));
+        int insertCnt = Storage.insertSubjects(databaseConnection, subjects.stream().filter(s -> testSubs.contains(s.getAoip_id())).collect(Collectors.toList()));
+        System.out.println("Added " + insertCnt + " subjects to the database...");
         Set<Integer> testSubIds = subjects.stream().filter(s -> testSubs.contains(s.getAoip_id())).map(Subject::getSubject_id).collect(Collectors.toSet());
-        
+
         System.out.println("Adding encounters...");
-        Storage.insertEncounters(databaseConnection, encounters.stream().filter(e -> testSubIds.contains(e.getSubject_id())).collect(Collectors.toList()));
-    
+        insertCnt = Storage.insertEncounters(databaseConnection, encounters.stream().filter(e -> testSubIds.contains(e.getSubject_id())).collect(Collectors.toList()));
+        System.out.println("Added " + insertCnt + " encounters to the database...");
+
         databaseConnection.close();
+        DiagnosisMap.getInstance().closeConnection2Db();
     }
 
     /**

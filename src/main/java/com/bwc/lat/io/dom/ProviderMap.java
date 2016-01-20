@@ -5,7 +5,16 @@
  */
 package com.bwc.lat.io.dom;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -44,6 +53,36 @@ public class ProviderMap {
 
     public static final ProviderMap getInstance() {
         return INSTANCE;
+    }
+
+    public void addProvidersToDb(Connection db) {
+        try {
+            int nextId;
+            try (Statement stat = db.createStatement()) {
+                ResultSet rs = stat.executeQuery("select max(PROVIDER_ID) from PROVIDER");
+                rs.first();
+                nextId = rs.getInt(1) + 1;
+            }
+
+            try (PreparedStatement istat = db.prepareStatement("insert into PROVIDER (PROVIDER_ID, PROVIDER_TYPE_ID, LNAME, CREATED_BY, CREATED_DATE) values (?,?,?,?,?)")) {
+                for (Entry<String, Integer> p : codeMap.entrySet()) {
+                    if (p.getValue() < nextId) {
+                        continue;
+                    }
+                    istat.setInt(1, p.getValue());
+                    istat.setInt(2, 1);
+                    istat.setString(3, p.getKey().replaceFirst("[A-Za-z]+ ", ""));
+                    istat.setString(4, "BWILK");
+                    istat.setDate(5, new Date(new java.util.Date().getTime()));
+                    if (istat.executeUpdate() != 1) {
+                        throw new SQLException("Code addition failed for provider: " + p.getKey().replaceFirst("[A-Za-z]+ ", ""));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DiagnosisMap.class.getName()).log(Level.SEVERE, "Failed to add new provider to database", ex);
+            System.exit(2);
+        }
     }
 
     public Integer getProviderCode(String dx) {

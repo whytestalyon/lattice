@@ -221,7 +221,7 @@ public class JDBCUtilities {
             connectionProps.put("user", this.userName);
             connectionProps.put("password", this.password);
 
-      // Using a driver manager:
+            // Using a driver manager:
             if (this.dbms.equals("mysql")) {
 //        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
                 conn
@@ -247,22 +247,22 @@ public class JDBCUtilities {
 
         String currentUrlString = null;
 
-        if (this.dbms.equals("mysql")) {
-            currentUrlString = "jdbc:" + this.dbms + "://" + this.serverName
-                    + ":" + this.portNumber + "/";
-            conn
-                    = DriverManager.getConnection(currentUrlString,
-                            connectionProps);
-
-            this.urlString = currentUrlString + this.dbName;
-            conn.setCatalog(this.dbName);
-        } else if (this.dbms.equals("derby")) {
-            this.urlString = "jdbc:" + this.dbms + ":" + this.dbName;
-
-            conn
-                    = DriverManager.getConnection(this.urlString
-                            + ";create=true", connectionProps);
-
+        switch (this.dbms) {
+            case "mysql":
+                currentUrlString = "jdbc:" + this.dbms + "://" + this.serverName
+                        + ":" + this.portNumber + "/";
+                conn
+                        = DriverManager.getConnection(currentUrlString,
+                                connectionProps);
+                this.urlString = currentUrlString + this.dbName;
+                conn.setCatalog(this.dbName);
+                break;
+            case "derby":
+                this.urlString = "jdbc:" + this.dbms + ":" + this.dbName;
+                conn
+                        = DriverManager.getConnection(this.urlString
+                                + ";create=true", connectionProps);
+                break;
         }
         System.out.println("Connected to database");
         return conn;
