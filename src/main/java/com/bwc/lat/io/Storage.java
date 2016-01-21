@@ -8,6 +8,7 @@ package com.bwc.lat.io;
 import com.bwc.lat.io.dom.DiagnosisMap;
 import com.bwc.lat.io.dom.Encounter;
 import com.bwc.lat.io.dom.Subject;
+import com.bwc.lat.io.dom.exam.EncounterExamType;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -144,6 +145,27 @@ public class Storage {
             + "?\n"
             + "  )";
 
+    private static String enc_exam_type_insert = "INSERT\n"
+            + "INTO\n"
+            + "  ENCOUNTER_EXAM_TYPE\n"
+            + "  (\n"
+            + "    ENCOUNTER_EXAM_TYPE_ID,\n"//1
+            + "    EXAM_TYPE_ID,\n"//2
+            + "    ENCOUNTER_ID,\n"//3
+            + "    CREATED_BY,\n"//4
+            + "    CREATED_DATE,\n"//5
+            + "    PERSONNEL_ID\n"//6
+            + "  )\n"
+            + "  VALUES\n"
+            + "  (\n"
+            + "    ?,\n"
+            + "    ?,\n"
+            + "    ?,\n"
+            + "    ?,\n"
+            + "    ?,\n"
+            + "    ?\n"
+            + "  )";
+
     public static int insertSubjects(Connection db, List<Subject> subjects) throws SQLException {
         int insertCnt = 0;
         try (PreparedStatement stat = db.prepareStatement(subject_insert)) {
@@ -270,6 +292,28 @@ public class Storage {
                     stat.setInt(17, enc.getPregnant_or_nursing());
                 }
                 insertCnt += stat.executeUpdate();
+            }
+        }
+        return insertCnt;
+    }
+
+    public static int insertEncExamTypes(Connection db, List<Encounter> encs) throws SQLException {
+        int insertCnt = 0;
+        try (PreparedStatement stat = db.prepareStatement(enc_exam_type_insert)) {
+            for (Encounter enc : encs) {
+                for (EncounterExamType eet : enc.getExams()) {
+                    stat.setInt(1, eet.getEncounter_exam_type_id());
+                    stat.setInt(2, eet.getExam_type().getId());
+                    stat.setInt(3, enc.getEncounter_id());
+                    stat.setString(4, eet.getCreated_by());
+                    stat.setDate(5, new Date(enc.getCreated_date().getTime()));
+                    if (eet.getPersonnel_id() == null) {
+                        stat.setNull(6, Types.INTEGER);
+                    } else {
+                        stat.setInt(6, eet.getPersonnel_id());
+                    }
+                    insertCnt += stat.executeUpdate();
+                }
             }
         }
         return insertCnt;
