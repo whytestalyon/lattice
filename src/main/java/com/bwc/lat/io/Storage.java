@@ -9,6 +9,9 @@ import com.bwc.lat.io.dom.DiagnosisMap;
 import com.bwc.lat.io.dom.Encounter;
 import com.bwc.lat.io.dom.Subject;
 import com.bwc.lat.io.dom.exam.EncounterExamType;
+import com.bwc.lat.io.dom.exam.ExamType;
+import com.bwc.lat.io.dom.res.D15ExamResult;
+import com.bwc.lat.io.dom.res.ExamResult;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,6 +19,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -319,6 +325,33 @@ public class Storage {
         return insertCnt;
     }
 
+    public static int insertExamResults(Connection db, List<Encounter> encs) throws SQLException {
+        AtomicInteger insertCnt = new AtomicInteger(0);
+
+        //insert D15 exam results
+        try (PreparedStatement stat = db.prepareStatement(D15ExamResult.INSERT_QUERY)) {
+            encs.stream()
+                    .flatMap(enc -> enc.getExams().stream())
+                    .filter(ext -> ext.getExam_type() == ExamType.COLOR_D15)
+                    .forEach(ext -> {
+                        ext.getResults()
+                        .stream()
+                        .map(res -> (D15ExamResult) res)
+                        .forEach(res -> {
+                            try {
+                                res.setD15InsertStatementFields(stat, ext);
+                                insertCnt.addAndGet(stat.executeUpdate());
+                            } catch (SQLException ex) {
+                                Logger.getLogger(Storage.class.getName()).log(Level.SEVERE, "D15 exam result insert failed.", ex);
+                                System.exit(2);
+                            }
+                        });
+                    });
+
+        }
+        return insertCnt.get();
+    }
+
     public static void clearPrevLoadedData(Connection db) throws SQLException {
         Statement stat = db.createStatement();
         stat.execute("delete from EXAM_RESULT where CREATED_BY = 'BWILK'");
@@ -327,5 +360,6 @@ public class Storage {
         stat.execute("delete from SUBJECT where CREATED_BY = 'BWILK'");
         stat.execute("delete from DIAGNOSIS where CREATED_BY = 'BWILK'");
         stat.execute("delete from PROVIDER where CREATED_BY = 'BWILK'");
+        stat.execute("delete from PERSONNEL where CREATED_BY = 'BWILK'");
     }
 }

@@ -9,6 +9,7 @@ import com.bwc.lat.io.ExcelParser;
 import com.bwc.lat.io.Storage;
 import com.bwc.lat.io.dom.DiagnosisMap;
 import com.bwc.lat.io.dom.Encounter;
+import com.bwc.lat.io.dom.PersonnelMap;
 import com.bwc.lat.io.dom.ProviderMap;
 import com.bwc.lat.io.dom.Subject;
 import com.oracle.util.jdbc.JDBCUtilities;
@@ -179,6 +180,9 @@ public class LatticeLoader {
         System.out.println("Adding new providers...");
         ProviderMap.getInstance().addProvidersToDb(databaseConnection);
 
+        System.out.println("Syncing personnel with DB...");
+        PersonnelMap.syncPersonnelMapWithDB(databaseConnection);
+
         //read information from the excel sheet
         ExcelParser ep = new ExcelParser(inputExcelFile);
         System.out.println("Parsing subjects...");
@@ -209,6 +213,10 @@ public class LatticeLoader {
         System.out.println("Adding encounter exam types...");
         insertCnt = Storage.insertEncExamTypes(databaseConnection, encounters.stream().filter(e -> testSubIds.contains(e.getSubject_id())).collect(Collectors.toList()));
         System.out.println("Added " + insertCnt + " encounter exam types to the database...");
+
+        System.out.println("Adding exam results...");
+        insertCnt = Storage.insertExamResults(databaseConnection, encounters.stream().filter(e -> testSubIds.contains(e.getSubject_id())).collect(Collectors.toList()));
+        System.out.println("Added " + insertCnt + " exam results...");
 
         databaseConnection.close();
         DiagnosisMap.getInstance().closeConnection2Db();

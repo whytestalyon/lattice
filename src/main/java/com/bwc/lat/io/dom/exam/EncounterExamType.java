@@ -5,6 +5,7 @@
  */
 package com.bwc.lat.io.dom.exam;
 
+import com.bwc.lat.io.dom.PersonnelMap;
 import com.bwc.lat.io.dom.res.ExamResult;
 import java.util.Date;
 import java.util.LinkedList;
@@ -21,7 +22,7 @@ public class EncounterExamType {
     private final ExamType exam_type;
     private final String created_by = "BWILK";
     private final Date created_date = new Date();
-    private Integer personnel_id;
+    private Integer personnel_id = null;
     private final LinkedList<ExamResult> results = new LinkedList<>();
 
     public EncounterExamType(ExamType exam_type) {
@@ -36,34 +37,9 @@ public class EncounterExamType {
     public void setPersonnel_id(String personnel) {
         if (personnel != null) {
             String p = personnel.split(",")[0];
-            switch (p) {
-                case "NICU":
-                    personnel_id = 111;
-                    break;
-                case "M Goldberg":
-                    personnel_id = 106;
-                    break;
-                case "K Packard":
-                    personnel_id = 12;
-                    break;
-                case "J Jones":
-                    personnel_id = 112;
-                    break;
-                case "K McKenney":
-                    //TBD
-//                    personnel_id = 0;
-                    break;
-                case "C Skumatz":
-                    personnel_id = 105;
-                    break;
-                case "P Summerfelt":
-                    personnel_id = 108;
-                    break;
-                case "Done at Neurology":
-                    personnel_id = 112;
-                    break;
-                default:
-                    break;
+            Integer pid = PersonnelMap.getPersonnelId(p);
+            if (pid != null) {
+                personnel_id = pid;
             }
         }
     }
@@ -96,5 +72,5 @@ public class EncounterExamType {
     public String toString() {
         return "EncounterExamType{" + "encounter_exam_type_id=" + encounter_exam_type_id + ", exam_type_id=" + exam_type + ", created_by=" + created_by + ", created_date=" + created_date + ", personnel_id=" + personnel_id + ", results=" + results + '}';
     }
-    
+
 }

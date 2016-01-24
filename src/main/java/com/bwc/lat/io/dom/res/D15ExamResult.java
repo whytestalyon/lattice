@@ -5,7 +5,12 @@
  */
 package com.bwc.lat.io.dom.res;
 
+import com.bwc.lat.io.dom.exam.EncounterExamType;
 import com.bwc.lat.io.exc.Eye;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *
@@ -121,4 +126,55 @@ public class D15ExamResult extends ExamResult {
         return "D15ExamResult{" + "MOI_Angle=" + MOI_Angle + ", MOI_Major_Radius=" + MOI_Major_Radius + ", MOI_Minor_Radius=" + MOI_Minor_Radius + ", MOI_Total_Error_Score=" + MOI_Total_Error_Score + ", MOI_Selectivity_Index=" + MOI_Selectivity_Index + ", MOI_Confusion_Index=" + MOI_Confusion_Index + ", MOI_Color_Discriminaton=" + MOI_Color_Discriminaton + ", MOI_Notes=" + MOI_Notes + ", saturated=" + saturated + ", trial_num=" + trial_num + ", eye=" + eye + '}';
     }
 
+    public void setD15InsertStatementFields(PreparedStatement stat, EncounterExamType examType) throws SQLException {
+        stat.setInt(1, getExam_result_id());
+        stat.setInt(2, examType.getEncounter_exam_type_id());
+        stat.setString(3, getCreated_by());
+        stat.setDate(4, new Date(getCreated_date().getTime()));
+        switch (eye) {
+            case OS:
+                stat.setString(5, "le");
+                break;
+            case OD:
+                stat.setString(5, "re");
+                break;
+            default:
+                stat.setString(5, "be");
+                break;
+        }
+        if (MOI_Angle == null) {
+            stat.setNull(6, Types.FLOAT);
+        } else {
+            stat.setDouble(6, MOI_Angle);
+        }
+        if (MOI_Major_Radius == null) {
+            stat.setNull(7, Types.FLOAT);
+        } else {
+            stat.setDouble(7, MOI_Major_Radius);
+        }
+        if (MOI_Minor_Radius == null) {
+            stat.setNull(8, Types.FLOAT);
+        } else {
+            stat.setDouble(8, MOI_Minor_Radius);
+        }
+        if (MOI_Total_Error_Score == null) {
+            stat.setNull(9, Types.FLOAT);
+        } else {
+            stat.setDouble(9, MOI_Total_Error_Score);
+        }
+        if (MOI_Selectivity_Index == null) {
+            stat.setNull(10, Types.FLOAT);
+        } else {
+            stat.setDouble(10, MOI_Selectivity_Index);
+        }
+        if (MOI_Confusion_Index == null) {
+            stat.setNull(11, Types.FLOAT);
+        } else {
+            stat.setDouble(11, MOI_Confusion_Index);
+        }
+        stat.setString(12, MOI_Color_Discriminaton);
+        stat.setString(13, MOI_Notes);
+        stat.setInt(14, trial_num);
+        stat.setString(15, saturated ? "SAT" : "DESAT");
+    }
 }
